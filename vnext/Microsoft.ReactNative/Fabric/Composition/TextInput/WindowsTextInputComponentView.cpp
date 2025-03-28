@@ -947,6 +947,11 @@ void WindowsTextInputComponentView::onGotFocus(
     if (windowsTextInputProps().clearTextOnFocus) {
       m_textServices->TxSetText(L"");
     }
+
+    if (windowsTextInputProps().selectTextOnFocus) {
+      m_propBitsMask |= TXTBIT_AUTOWORDSEL;
+      m_propBits |= TXTBIT_AUTOWORDSEL;
+    }
   }
 }
 
