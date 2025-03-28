@@ -1053,6 +1053,9 @@ void WindowsTextInputComponentView::updateProps(
 
   if (oldTextInputProps.autoFocus != newTextInputProps.autoFocus) {
     // onGotFocus(nullptr); Figure out how to pass args or create a similar function
+    /*if (m_eventEmitter) {
+      m_eventEmitter->onFocus();
+    }*/
   }
 
   UpdatePropertyBits();
