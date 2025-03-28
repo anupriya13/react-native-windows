@@ -144,6 +144,11 @@ export default class Bootstrap extends React.Component<{}, any> {
             clearTextOnFocus={true}
             placeholder={'Clear text on focus'}
           />
+          <TextInput
+            style={styles.input}
+            autoFocus={true}
+            placeholder={'Auto focus true'}
+          />
           <Button
             title={
               this.state.passwordHidden

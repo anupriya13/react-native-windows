@@ -1051,6 +1051,10 @@ void WindowsTextInputComponentView::updateProps(
     m_propBits |= TXTBIT_PARAFORMATCHANGE;
   }
 
+  if (oldTextInputProps.autoFocus != newTextInputProps.autoFocus) {
+    // onGotFocus(nullptr); Figure out how to pass args or create a similar function
+  }
+
   UpdatePropertyBits();
 }
 
