@@ -14,7 +14,7 @@
 #include "CompositionDynamicAutomationProvider.h"
 #include "CompositionHelpers.h"
 #include "TextDrawing.h"
-
+#include "Utils/PropertyUtils.h"
 namespace winrt::Microsoft::ReactNative::Composition::implementation {
 
 ParagraphComponentView::ParagraphComponentView(
@@ -59,6 +59,10 @@ void ParagraphComponentView::updateProps(
 
   if (oldViewProps.textAttributes.alignment != newViewProps.textAttributes.alignment) {
     updateTextAlignment(newViewProps.textAttributes.alignment);
+  }
+
+  if (oldViewProps.textAttributes.baseWritingDirection != newViewProps.textAttributes.baseWritingDirection) {
+    //TryUpdateFlowDirection(newProps, "writingDirection", newViewProps.textAttributes.baseWritingDirection);
   }
 
   Super::updateProps(props, oldProps);

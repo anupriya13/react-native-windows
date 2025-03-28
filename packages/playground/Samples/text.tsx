@@ -12,6 +12,9 @@ export default class Bootstrap extends React.Component {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>Welcome to React Native!</Text>
+        <Text style={styles.welcome} writingDirection={'auto'}>Writing Direction: Auto</Text>
+        <Text style={styles.welcome} writingDirection={'ltr'}>Writing Direction: Left to Right</Text>
+        <Text style={styles.welcome} writingDirection={'rtl'}>Writing Direction: Right to left</Text>
       </View>
     );
   }
