@@ -39,5 +39,8 @@
   },
   "engines": {
     "node": ">= 18"
-  }
+  },
+"rnpm": {
+   "assets": ["./windows/playground-composition.Package/Assets/fonts", "./windows/playground-composition.Package/Underdog-Regular.ttf"]
+}
 }
