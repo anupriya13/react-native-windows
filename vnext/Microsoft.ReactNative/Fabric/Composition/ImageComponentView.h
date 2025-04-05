@@ -95,6 +95,7 @@ struct ImageComponentView : ImageComponentViewT<ImageComponentView, ViewComponen
   std::shared_ptr<ImageResponseImage> m_imageResponseImage;
   std::shared_ptr<WindowsImageResponseObserver> m_imageResponseObserver;
   facebook::react::ImageShadowNode::ConcreteState::Shared m_state;
+  facebook::react::ImageSource m_defaultResponseImage;
 };
 
 } // namespace winrt::Microsoft::ReactNative::Composition::implementation

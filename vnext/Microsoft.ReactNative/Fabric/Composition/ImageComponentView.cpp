@@ -121,7 +121,14 @@ void ImageComponentView::didReceiveFailureFromObserver(const facebook::react::Im
     std::shared_ptr<facebook::react::ImageErrorInfo> errorInfo =
         std::static_pointer_cast<facebook::react::ImageErrorInfo>(error.getError());
     imageEventEmitter->onError(*errorInfo);
-    imageEventEmitter->onLoadEnd();
+
+    auto currentSource = m_state->getData().getImageSource();
+    if (!m_defaultResponseImage.uri.empty() && m_defaultResponseImage != currentSource) {
+      imageEventEmitter->onLoadStart();
+      imageEventEmitter->onLoad(m_defaultResponseImage);
+    } else {
+      imageEventEmitter->onLoadEnd();
+    }
   }
 }
 
@@ -140,6 +147,10 @@ void ImageComponentView::updateProps(
       oldImageProps.blurRadius != newImageProps.blurRadius || oldImageProps.tintColor != newImageProps.tintColor ||
       oldImageProps.resizeMode != newImageProps.resizeMode) {
     m_drawingSurface = nullptr; // TODO don't need to recreate the surface just to redraw...
+  }
+
+  if (oldImageProps.defaultSource != newImageProps.defaultSource) {
+    m_defaultResponseImage = newImageProps.defaultSource;
   }
 
   Super::updateProps(props, oldProps);

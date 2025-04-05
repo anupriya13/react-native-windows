@@ -64,8 +64,8 @@ export default class Bootstrap extends React.Component<
     imageUri: smallImageUri,
     modalVisible: false,
     currentPicker: '',
-    defaultImageUri: reactLogoUri,
-    includedefaultSourceOnly: false,
+    defaultImageUri: largeImageUri,
+    includedefaultSourceOnly: true,
   };
 
   switchImageUri = (value: string) => {
@@ -238,6 +238,7 @@ export default class Bootstrap extends React.Component<
                   : {tintColor: this.state.tintColor},
               ]}
               defaultSource={{uri: this.state.defaultImageUri}}
+              source={{uri: "https://www.example.com/failImage.png"}}
             />
           ) : (
             <Image
