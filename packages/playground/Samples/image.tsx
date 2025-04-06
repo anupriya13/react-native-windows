@@ -34,6 +34,9 @@ const dataImageUri =
 const dataImageSvg =
   'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4gPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyOCAyOCIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTEzLjEyNSAwSDBWMTMuMTI1SDEzLjEyNVYwWiIgZmlsbD0iI0YyNTAyMiI+PC9wYXRoPjxwYXRoIGQ9Ik0yOCAwSDE0Ljg3NVYxMy4xMjVIMjhWMFoiIGZpbGw9IiM3RkJBMDAiPjwvcGF0aD48cGF0aCBkPSJNMTMuMTI1IDE0Ljg3NUgwVjI4SDEzLjEyNVYxNC44NzVaIiBmaWxsPSIjMDBBNEVGIj48L3BhdGg+PHBhdGggZD0iTTI4IDE0Ljg3NUgxNC44NzVWMjhIMjhWMTQuODc1WiIgZmlsbD0iI0ZGQjkwMCI+PC9wYXRoPjwvc3ZnPiA=';
 
+// reduser.png works fine, some bug in .svg require images
+const localSvg = require('./images/Microsoft-Logo.svg');
+
 export default class Bootstrap extends React.Component<
   {},
   {
@@ -53,6 +56,7 @@ export default class Bootstrap extends React.Component<
     currentPicker: string | null;
     defaultImageUri: string;
     includedefaultSourceOnly: boolean;
+    includeLocalSvg: boolean;
   }
 > {
   state = {
@@ -66,6 +70,7 @@ export default class Bootstrap extends React.Component<
     currentPicker: '',
     defaultImageUri: reactLogoUri,
     includedefaultSourceOnly: false,
+    includeLocalSvg: false,
   };
 
   switchImageUri = (value: string) => {
@@ -178,12 +183,27 @@ export default class Bootstrap extends React.Component<
           selectedLabel={this.state.selectedResizeMode}
           onSelect={this.handleResizeModesSelect}
         />
-        <TestPickerView
-          options={imageSources}
-          id="Image Source"
-          selectedLabel={this.state.selectedSource}
-          onSelect={this.handleImageSourcesSelect}
-        />
+        <View style={styles.rowContainer}>
+          <Text>Source from dropdown</Text>
+          <Switch
+            style={{marginLeft: 10}}
+            value={this.state.includeLocalSvg}
+            onValueChange={(value: boolean) =>
+              this.setState({includeLocalSvg: value})
+            }
+          />
+          <Text>Include local Svg using require</Text>
+        </View>
+        {this.state.includeLocalSvg ? (
+          <></>
+        ) : (
+          <TestPickerView
+            options={imageSources}
+            id="Image Source"
+            selectedLabel={this.state.selectedSource}
+            onSelect={this.handleImageSourcesSelect}
+          />
+        )}
         <TestPickerView
           options={blurRadiusOptions}
           id="Blur Radius"
@@ -220,6 +240,7 @@ export default class Bootstrap extends React.Component<
           />
           <Text>Include defaultSource Only</Text>
         </View>
+
         <View
           style={
             this.state.includedefaultSourceOnly
@@ -251,7 +272,11 @@ export default class Bootstrap extends React.Component<
                   : {tintColor: this.state.tintColor},
               ]}
               defaultSource={{uri: this.state.defaultImageUri}}
-              source={{uri: this.state.imageUri}}
+              source={
+                this.state.includeLocalSvg
+                  ? localSvg
+                  : {uri: this.state.imageUri}
+              }
               loadingIndicatorSource={{uri: loadingImageUri}}
               resizeMode={this.state.selectedResizeMode}
               blurRadius={this.state.blurRadius}
