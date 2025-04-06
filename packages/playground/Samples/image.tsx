@@ -258,6 +258,7 @@ export default class Bootstrap extends React.Component<
               onLoad={() => console.log('onLoad')}
               onLoadStart={() => console.log('onLoadStart')}
               onLoadEnd={() => console.log('onLoadEnd')}
+              crossOrigin="use-credentials"
             />
           )}
         </View>
