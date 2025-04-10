@@ -1067,6 +1067,10 @@ void WindowsTextInputComponentView::updateProps(
     m_propBits |= TXTBIT_PARAFORMATCHANGE;
   }
 
+  if (oldTextInputProps.selection.start != newTextInputProps.selection.start || oldTextInputProps.selection.end != newTextInputProps.selection.end) {
+    updateSelection(newTextInputProps.selection.start, newTextInputProps.selection.end);
+  }
+
   UpdatePropertyBits();
 }
 
@@ -1185,6 +1189,8 @@ void WindowsTextInputComponentView::OnSelectionChanged(LONG start, LONG end) noe
     facebook::react::WindowsTextInputEventEmitter::OnSelectionChange onSelectionChangeArgs;
     onSelectionChangeArgs.selection.start = start;
     onSelectionChangeArgs.selection.end = end;
+    const auto &props = windowsTextInputProps();
+    updateSelection(props.selection.start, props.selection.end);
     emitter->onSelectionChange(onSelectionChangeArgs);
   }
 }
@@ -1589,6 +1595,11 @@ void WindowsTextInputComponentView::updateLetterSpacing(float letterSpacing) noe
   // Apply to future text input
   winrt::check_hresult(
       m_textServices->TxSendMessage(EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&cf), &res));
+}
+
+void WindowsTextInputComponentView::updateSelection(const int start,const int end) noexcept {
+ LRESULT res;
+      winrt::check_hresult(m_textServices->TxSendMessage(EM_SETSEL, static_cast<WPARAM>(start), static_cast<LPARAM>(end), &res));
 }
 
 } // namespace winrt::Microsoft::ReactNative::Composition::implementation

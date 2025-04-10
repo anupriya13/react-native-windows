@@ -72,7 +72,8 @@ export default class Bootstrap extends React.Component<{}, any> {
           <View style={styles.container}>
             <TextInput
               style={styles.input}
-              placeholder={'MultiLine'}
+              placeholder={'MultiLine and selection (1,3)'}
+              selection={{ start: 1, end: 3 }}
               multiline={true}
             />
             <TextInput
@@ -87,8 +88,9 @@ export default class Bootstrap extends React.Component<{}, any> {
             />
             <TextInput
               style={styles.input}
-              placeholder={'PlaceHolder color blue'}
+              placeholder={'PlaceHolder color blue and selection (2,6)'}
               placeholderTextColor="blue"
+              selection={{ start: 2, end: 6 }}
             />
             <TextInput
               style={styles.input}
