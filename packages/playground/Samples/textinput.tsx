@@ -72,13 +72,11 @@ export default class Bootstrap extends React.Component<{}, any> {
           <View style={styles.container}>
             <TextInput
               style={styles.input}
-              placeholder={'MultiLine'}
-              multiline={true}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder={'ReadOnly'}
+              placeholder={'ReadOnly and Multiline to check detectorTypes'}
+              value="For more information, visit https://www.example.com, call +1-800-123-4567, or email info@example.com"
               editable={false}
+              multiline={true}
+              dataDetectorTypes={['phoneNumber', 'link', 'address']}
             />
             <TextInput
               style={styles.input}

@@ -50,8 +50,8 @@ WindowsTextInputProps::WindowsTextInputProps(
       submitKeyEvents(convertRawProp(context, rawProps, "submitKeyEvents", sourceProps.submitKeyEvents, {})),
       autoFocus(convertRawProp(context, rawProps, "autoFocus", sourceProps.autoFocus, {false})),
       textAlign(
-          convertRawProp(context, rawProps, "textAlign", sourceProps.textAlign, facebook::react::TextAlignment::Left)) {
-}
+          convertRawProp(context, rawProps, "textAlign", sourceProps.textAlign, facebook::react::TextAlignment::Left)),
+      dataDetectorTypes(convertRawProp(context, rawProps, "dataDetectorTypes", sourceProps.dataDetectorTypes, {})) {}
 
 void WindowsTextInputProps::setProp(
     const PropsParserContext &context,

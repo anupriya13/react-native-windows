@@ -470,6 +470,27 @@ AutoCorrectOffCallback(LANGID langid, const WCHAR *pszBefore, WCHAR *pszAfter, L
   return ATP_CHANGE;
 }
 
+inline bool hasDataDetectorTypesFlag(
+    facebook::react::DataDetectorTypesEnum value,
+    facebook::react::DataDetectorTypesEnum flag) {
+  return (static_cast<int>(value) & static_cast<int>(flag)) == static_cast<int>(flag);
+}
+
+inline facebook::react::DataDetectorTypesEnum operator|(
+    facebook::react::DataDetectorTypesEnum lhs,
+    facebook::react::DataDetectorTypesEnum rhs) {
+  return static_cast<facebook::react::DataDetectorTypesEnum>(
+      static_cast<std::underlying_type_t<facebook::react::DataDetectorTypesEnum>>(lhs) |
+      static_cast<std::underlying_type_t<facebook::react::DataDetectorTypesEnum>>(rhs));
+}
+
+inline facebook::react::DataDetectorTypesEnum &operator|=(
+    facebook::react::DataDetectorTypesEnum &lhs,
+    facebook::react::DataDetectorTypesEnum rhs) {
+  lhs = lhs | rhs;
+  return lhs;
+}
+
 facebook::react::AttributedString WindowsTextInputComponentView::getAttributedString() const {
   // Use BaseTextShadowNode to get attributed string from children
 
@@ -1088,6 +1109,11 @@ void WindowsTextInputComponentView::updateProps(
     updateAutoCorrect(newTextInputProps.autoCorrect);
   }
 
+  if (oldTextInputProps.dataDetectorTypes != newTextInputProps.dataDetectorTypes && newTextInputProps.multiline &&
+      !newTextInputProps.editable) {
+    updateDataDetectorTypes(newTextInputProps.dataDetectorTypes);
+  }
+
   UpdatePropertyBits();
 }
 
@@ -1630,5 +1656,46 @@ void WindowsTextInputComponentView::updateSpellCheck(bool enable) noexcept {
   LRESULT lresult;
   winrt::check_hresult(
       m_textServices->TxSendMessage(EM_SETLANGOPTIONS, IMF_SPELLCHECKING, enable ? newLangOptions : 0, &lresult));
+}
+
+void WindowsTextInputComponentView::updateDataDetectorTypes(std::vector<std::string> dataDetectorTypesString) noexcept {
+  facebook::react::DataDetectorTypesEnum dataDetectorTypesEnum = facebook::react::DataDetectorTypesEnum::None;
+
+  for (int i = 0; i < dataDetectorTypesString.size(); i++) {
+    if (dataDetectorTypesString[i] == "none") {
+      LRESULT res;
+      winrt::check_hresult(m_textServices->TxSendMessage(EM_AUTOURLDETECT, 0, 0, &res));
+      return;
+    }
+    if (dataDetectorTypesString[i] == "phoneNumber") {
+      dataDetectorTypesEnum |= facebook::react::DataDetectorTypesEnum::PhoneNumber;
+    } else if (dataDetectorTypesString[i] == "link") {
+      dataDetectorTypesEnum |= facebook::react::DataDetectorTypesEnum::Link;
+    } else if (dataDetectorTypesString[i] == "address") {
+      dataDetectorTypesEnum |= facebook::react::DataDetectorTypesEnum::Address;
+    } else if (dataDetectorTypesString[i] == "calendarEvent") {
+      dataDetectorTypesEnum |= facebook::react::DataDetectorTypesEnum::CalendarEvent;
+    } else if (dataDetectorTypesString[i] == "all") {
+      dataDetectorTypesEnum |= facebook::react::DataDetectorTypesEnum::All;
+    }
+  }
+
+  DWORD wParam = 0;
+  if (hasDataDetectorTypesFlag(dataDetectorTypesEnum, facebook::react::DataDetectorTypesEnum::PhoneNumber)) {
+    wParam |= AURL_ENABLETELNO;
+  }
+  if (hasDataDetectorTypesFlag(dataDetectorTypesEnum, facebook::react::DataDetectorTypesEnum::Link)) {
+    wParam |= AURL_ENABLEEAURLS;
+    wParam |= AURL_ENABLEURL;
+  }
+  if (hasDataDetectorTypesFlag(dataDetectorTypesEnum, facebook::react::DataDetectorTypesEnum::Address)) {
+    wParam |= AURL_ENABLEEMAILADDR;
+  }
+  if (hasDataDetectorTypesFlag(dataDetectorTypesEnum, facebook::react::DataDetectorTypesEnum::CalendarEvent)) {
+    // TO-DO: Calendar Event support (if any)
+  }
+
+  LRESULT res;
+  winrt::check_hresult(m_textServices->TxSendMessage(EM_AUTOURLDETECT, wParam, 0, &res));
 }
 } // namespace winrt::Microsoft::ReactNative::Composition::implementation

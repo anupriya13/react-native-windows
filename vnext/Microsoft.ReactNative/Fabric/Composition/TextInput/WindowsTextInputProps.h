@@ -15,6 +15,15 @@ struct CompWindowsTextInputSelectionStruct {
   int end;
 };
 
+enum class DataDetectorTypesEnum : unsigned int {
+  None = 0x0,
+  PhoneNumber = 0x1,
+  Link = 0x2,
+  Address = 0x4,
+  CalendarEvent = 0x8,
+  All = PhoneNumber | Link | Address | CalendarEvent
+};
+
 static inline void
 fromRawValue(const PropsParserContext &context, const RawValue &value, CompWindowsTextInputSelectionStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
@@ -121,6 +130,7 @@ class WindowsTextInputProps final : public ViewProps, public BaseTextProps {
   std::vector<CompWindowsTextInputSubmitKeyEventsStruct> submitKeyEvents{};
   bool autoFocus{false};
   facebook::react::TextAlignment textAlign{};
+  std::vector<std::string> dataDetectorTypes{};
 };
 
 } // namespace facebook::react

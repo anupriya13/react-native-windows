@@ -113,6 +113,7 @@ struct WindowsTextInputComponentView
   void updateLetterSpacing(float letterSpacing) noexcept;
   void updateAutoCorrect(bool value) noexcept;
   void updateSpellCheck(bool value) noexcept;
+  void updateDataDetectorTypes(std::vector<std::string> dataDetectorTypes) noexcept;
 
   winrt::Windows::UI::Composition::CompositionSurfaceBrush m_brush{nullptr};
   winrt::Microsoft::ReactNative::Composition::Experimental::ICaretVisual m_caretVisual{nullptr};
