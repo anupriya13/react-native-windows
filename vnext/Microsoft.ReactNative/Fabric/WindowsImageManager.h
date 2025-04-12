@@ -24,6 +24,7 @@ struct WindowsImageManager {
   winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::ReactNative::Composition::ImageResponse>
   GetImageRandomAccessStreamAsync(ReactImageSource source) const;
 
+  std::string m_crossOrigin;
   winrt::Windows::Web::Http::HttpClient m_httpClient;
   winrt::Microsoft::ReactNative::ReactContext m_reactContext;
   winrt::hstring m_defaultUserAgent;

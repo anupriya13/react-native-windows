@@ -14,7 +14,6 @@ enum class ImageSourceFormat { Bitmap = 0, Svg = 1 };
 struct ReactImageSource {
   std::string uri;
   std::string method;
-  std::string crossOrigin;
   std::vector<std::pair<std::string, std::string>> headers;
   double width = 0;
   double height = 0;

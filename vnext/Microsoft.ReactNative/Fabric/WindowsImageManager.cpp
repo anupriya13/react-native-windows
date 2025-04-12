@@ -114,7 +114,7 @@ WindowsImageManager::GetImageRandomAccessStreamAsync(ReactImageSource source) co
   }
 
   // TO-DO Find out a way to access crossOrigin prop value here
-  if (!source.crossOrigin.empty() && source.crossOrigin == "use-credentials") {
+  if (!m_crossOrigin.empty() && m_crossOrigin == "use-credentials") {
     request.Headers().Append(L"Access-Control-Allow-Credentials", L"true");
   }
 
