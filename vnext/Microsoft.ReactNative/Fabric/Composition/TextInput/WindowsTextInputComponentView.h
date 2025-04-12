@@ -118,6 +118,8 @@ struct WindowsTextInputComponentView
   winrt::Windows::UI::Composition::CompositionSurfaceBrush m_brush{nullptr};
   winrt::Microsoft::ReactNative::Composition::Experimental::ICaretVisual m_caretVisual{nullptr};
   winrt::Microsoft::ReactNative::Composition::Experimental::IDrawingSurfaceBrush m_drawingSurface{nullptr};
+  LONG m_start = 0;
+  LONG m_end = 0;
 
   // Used by ITextHost impl
   CHARFORMAT2W m_cf;
@@ -143,6 +145,7 @@ struct WindowsTextInputComponentView
   HCURSOR m_hcursor{nullptr};
   std::chrono::steady_clock::time_point m_lastClickTime{};
   std::vector<facebook::react::CompWindowsTextInputSubmitKeyEventsStruct> m_submitKeyEvents;
+  bool m_selectionColor{false};
 };
 
 } // namespace winrt::Microsoft::ReactNative::Composition::implementation

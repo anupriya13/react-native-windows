@@ -1105,6 +1105,10 @@ void WindowsTextInputComponentView::updateProps(
     updateAutoCorrect(newTextInputProps.autoCorrect);
   }
 
+  if (oldTextInputProps.selectionColor != newTextInputProps.selectionColor) {
+    m_selectionColor = true;
+  }
+
   UpdatePropertyBits();
 }
 
@@ -1218,6 +1222,11 @@ void WindowsTextInputComponentView::OnTextUpdated() noexcept {
 }
 
 void WindowsTextInputComponentView::OnSelectionChanged(LONG start, LONG end) noexcept {
+  if (m_selectionColor) {
+    m_start = start + 1;
+    m_end = end + 1;
+  }
+
   if (m_eventEmitter && !m_comingFromState /* && !m_comingFromJS ?? */) {
     auto emitter = std::static_pointer_cast<const facebook::react::WindowsTextInputEventEmitter>(m_eventEmitter);
     facebook::react::WindowsTextInputEventEmitter::OnSelectionChange onSelectionChangeArgs;
@@ -1517,6 +1526,35 @@ void WindowsTextInputComponentView::DrawText() noexcept {
         d2dDeviceContext->FillRectangle(fillRect, backgroundBrush.get());
       }
 
+      if (m_selectionColor && m_start != m_end) {
+        auto selectionLength = m_end - m_start;
+
+        if (selectionLength > 0) {
+          // Estimate width per character – tune this based on font/scale
+          float charWidth = 8.0f;
+
+          float startX = (rcClient.left + m_layoutMetrics.contentInsets.left + (m_start * charWidth)) /
+              m_layoutMetrics.pointScaleFactor;
+          float endX = startX + (selectionLength * charWidth) / m_layoutMetrics.pointScaleFactor;
+
+          float topY =
+              static_cast<float>(rcClient.top + m_layoutMetrics.contentInsets.top) / m_layoutMetrics.pointScaleFactor;
+          float bottomY = static_cast<float>(rcClient.bottom - m_layoutMetrics.contentInsets.bottom) /
+              m_layoutMetrics.pointScaleFactor;
+
+          D2D1_RECT_F highlightRect = {
+              startX,
+              topY,
+              endX,
+              bottomY,
+          };
+
+          winrt::com_ptr<ID2D1SolidColorBrush> highlightBrush;
+          winrt::check_hresult(
+              d2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), highlightBrush.put()));
+          d2dDeviceContext->FillRectangle(highlightRect, highlightBrush.get());
+        }
+      }
       // TODO keep track of proper invalid rect
       auto hrDraw = m_textServices->TxDrawD2D(d2dDeviceContext, &rc, nullptr, TXTVIEW_ACTIVE);
       winrt::check_hresult(hrDraw);

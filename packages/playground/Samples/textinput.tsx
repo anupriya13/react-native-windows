@@ -74,6 +74,7 @@ export default class Bootstrap extends React.Component<{}, any> {
               style={styles.input}
               placeholder={'MultiLine'}
               multiline={true}
+              selectionColor="yellow"
             />
             <TextInput
               style={styles.input}
