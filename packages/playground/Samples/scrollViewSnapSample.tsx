@@ -14,6 +14,7 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  TextInput
 } from 'react-native';
 
 function wait(timeout: number) {
@@ -304,7 +305,18 @@ export default class Bootstrap extends React.Component<{}, any> {
             onScroll={() => {
               console.log('onScroll');
             }}
-            decelerationRate={0.95}>
+            decelerationRate={0.95}
+            keyboardDismissMode={'on-drag'}>
+              <TextInput
+                style={{
+                  height: 40,
+                  borderColor: 'gray',
+                  borderWidth: 1,
+                  marginBottom: 20,
+                  paddingHorizontal: 8,
+                }}
+                placeholder="Tap here and open keyboard"
+              />
             {this.makeItems(20, [styles.itemWrapper])}
           </ScrollView>
         </View>

@@ -769,6 +769,10 @@ void ScrollViewComponentView::updateProps(
   if (!oldProps || oldViewProps.decelerationRate != newViewProps.decelerationRate) {
     updateDecelerationRate(newViewProps.decelerationRate);
   }
+
+  if (!oldProps || oldViewProps.keyboardDismissMode != newViewProps.keyboardDismissMode) {
+    m_dismissKeyboardOnDrag = (newViewProps.keyboardDismissMode == facebook::react::ScrollViewKeyboardDismissMode::OnDrag);
+  }
 }
 
 void ScrollViewComponentView::updateState(
@@ -1219,6 +1223,9 @@ winrt::Microsoft::ReactNative::Composition::Experimental::IVisual ScrollViewComp
           winrt::IInspectable const & /*sender*/,
           winrt::Microsoft::ReactNative::Composition::Experimental::IScrollPositionChangedArgs const &args) {
         updateStateWithContentOffset();
+        if (m_dismissKeyboardOnDrag) {
+          // Call API to dismiss keyboard
+        }
         auto eventEmitter = GetEventEmitter();
         if (eventEmitter) {
           facebook::react::ScrollViewEventEmitter::Metrics scrollMetrics;
