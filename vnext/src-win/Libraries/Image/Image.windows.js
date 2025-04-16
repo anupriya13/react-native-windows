@@ -114,6 +114,16 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
     width: undefined,
     height: undefined,
   };
+  const defaultSource = resolveAssetSource(props.defaultSource);
+  const loadingIndicatorSource = resolveAssetSource(
+    props.loadingIndicatorSource,
+  );
+
+  if (props.defaultSource != null && props.loadingIndicatorSource != null) {
+    throw new Error(
+      'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
+    );
+  }
 
   let style: ImageStyleProp;
   let sources;
@@ -196,6 +206,10 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
                   tintColor={tintColor}
                   source={sources}
                   internal_analyticTag={analyticTag}
+                  defaultSource={defaultSource ? defaultSource.uri : null}
+                  loadingIndicatorSrc={
+                    loadingIndicatorSource ? loadingIndicatorSource.uri : null
+                  }
                 />
               )}
             </ImageAnalyticsTagContext.Consumer>
@@ -218,6 +232,10 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
             tintColor={tintColor}
             source={sources}
             internal_analyticTag={analyticTag}
+            defaultSource={defaultSource ? defaultSource.uri : null}
+            loadingIndicatorSrc={
+              loadingIndicatorSource ? loadingIndicatorSource.uri : null
+            }
           />
         )}
       </ImageAnalyticsTagContext.Consumer>
