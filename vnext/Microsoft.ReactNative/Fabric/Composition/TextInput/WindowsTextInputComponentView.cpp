@@ -539,10 +539,10 @@ void WindowsTextInputComponentView::HandleCommand(
         sc.chrg.cpMin = static_cast<LONG>(begin);
         sc.chrg.cpMax = static_cast<LONG>(end);
         sc.seltyp = (begin == end) ? SEL_EMPTY : SEL_TEXT;
-
         LRESULT res;
         winrt::check_hresult(
             m_textServices->TxSendMessage(EM_SETSEL, static_cast<WPARAM>(begin), static_cast<LPARAM>(end), &res));
+        updateSelectionColor(m_selectionColor);
       }
 
       m_comingFromJS = false;
@@ -1123,6 +1123,15 @@ void WindowsTextInputComponentView::updateProps(
     updateAutoCorrect(newTextInputProps.autoCorrect);
   }
 
+  if (oldTextInputProps.selection.start != newTextInputProps.selection.start ||
+    oldTextInputProps.selection.end != newTextInputProps.selection.end) {
+    updateSelection(newTextInputProps.selection.start, newTextInputProps.selection.end);
+  }
+
+  if (oldTextInputProps.selectionColor != newTextInputProps.selectionColor) {
+    m_selectionColor = newTextInputProps.selectionColor;
+  }
+
   UpdatePropertyBits();
 }
 
@@ -1171,9 +1180,13 @@ void WindowsTextInputComponentView::UpdateText(const std::string &str) noexcept 
 
   winrt::check_hresult(m_textServices->TxSendMessage(
       EM_SETTEXTEX, reinterpret_cast<WPARAM>(&stt), reinterpret_cast<LPARAM>(str.c_str()), &res));
-
+  if (m_selection) {
+    cr.cpMin = m_selectionStart;
+    cr.cpMax = m_selectionEnd;
+  }
   winrt::check_hresult(
       m_textServices->TxSendMessage(EM_SETSEL, static_cast<WPARAM>(cr.cpMin), static_cast<LPARAM>(cr.cpMax), &res));
+  updateSelectionColor(m_selectionColor);
 
   // enable colored emojis
   winrt::check_hresult(
@@ -1665,5 +1678,36 @@ void WindowsTextInputComponentView::updateSpellCheck(bool enable) noexcept {
   LRESULT lresult;
   winrt::check_hresult(
       m_textServices->TxSendMessage(EM_SETLANGOPTIONS, IMF_SPELLCHECKING, enable ? newLangOptions : 0, &lresult));
+}
+
+void WindowsTextInputComponentView::updateSelection(int start, int end) noexcept {
+  m_selection = true;
+  m_selectionStart = start;
+  m_selectionEnd = end;
+}
+
+void WindowsTextInputComponentView::updateSelectionColor(const facebook::react::SharedColor &selectionColor) noexcept {
+  if (!selectionColor) {
+    return;
+  }
+
+  // Convert SharedColor to COLORREF
+  auto d2dColor = theme()->D2DColor(*selectionColor);
+
+  COLORREF colorRef = RGB(
+    static_cast<BYTE>(d2dColor.r * 255),
+    static_cast<BYTE>(d2dColor.g * 255),
+    static_cast<BYTE>(d2dColor.b * 255));
+
+  CHARFORMAT2W cf = {};
+  cf.cbSize = sizeof(CHARFORMAT2W);
+  cf.dwMask = CFM_BACKCOLOR;
+  cf.crBackColor = colorRef;
+
+  LRESULT res;
+
+  // Apply the selection color to the RichEdit control
+  winrt::check_hresult(
+      m_textServices->TxSendMessage(EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&cf), &res));
 }
 } // namespace winrt::Microsoft::ReactNative::Composition::implementation

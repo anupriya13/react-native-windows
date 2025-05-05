@@ -114,6 +114,8 @@ struct WindowsTextInputComponentView
   void updateLetterSpacing(float letterSpacing) noexcept;
   void updateAutoCorrect(bool value) noexcept;
   void updateSpellCheck(bool value) noexcept;
+  void updateSelection(int start, int end) noexcept;
+  void updateSelectionColor(const facebook::react::SharedColor &selectionColor) noexcept;
 
   winrt::Windows::UI::Composition::CompositionSurfaceBrush m_brush{nullptr};
   winrt::Microsoft::ReactNative::Composition::Experimental::ICaretVisual m_caretVisual{nullptr};
@@ -130,6 +132,8 @@ struct WindowsTextInputComponentView
   float m_fontSizeMultiplier{1.0};
   int64_t m_mostRecentEventCount{0};
   int m_nativeEventCount{0};
+  int m_selectionStart{-1};
+  int m_selectionEnd{-1};
   bool m_comingFromJS{false};
   bool m_comingFromState{false};
   int m_cDrawBlock{0};
@@ -138,6 +142,8 @@ struct WindowsTextInputComponentView
   bool m_hasFocus{false};
   bool m_clearTextOnSubmit{false};
   bool m_multiline{false};
+  bool m_selection{false};
+  facebook::react::SharedColor m_selectionColor;
   DWORD m_propBitsMask{0};
   DWORD m_propBits{0};
   HCURSOR m_hcursor{nullptr};
