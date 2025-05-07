@@ -121,6 +121,7 @@ class WindowsTextInputProps final : public ViewProps, public BaseTextProps {
   std::vector<CompWindowsTextInputSubmitKeyEventsStruct> submitKeyEvents{};
   bool autoFocus{false};
   facebook::react::TextAlignment textAlign{};
+  std::string submitBehaviour{};
 };
 
 } // namespace facebook::react

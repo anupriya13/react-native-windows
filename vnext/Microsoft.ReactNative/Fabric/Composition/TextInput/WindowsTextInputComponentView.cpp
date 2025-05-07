@@ -843,7 +843,8 @@ void WindowsTextInputComponentView::OnKeyUp(
 
 bool WindowsTextInputComponentView::ShouldSubmit(
     const winrt::Microsoft::ReactNative::Composition::Input::CharacterReceivedRoutedEventArgs &args) noexcept {
-  bool shouldSubmit = true;
+  bool shouldSubmit = (windowsTextInputProps().submitBehaviour == "Submit") ||
+    (windowsTextInputProps().submitBehaviour == "BlurAndSubmit");
 
   if (shouldSubmit) {
     if (!m_multiline && m_submitKeyEvents.size() == 0) {
@@ -901,6 +902,10 @@ void WindowsTextInputComponentView::OnCharacterReceived(
       facebook::react::WindowsTextInputEventEmitter::OnSubmitEditing onSubmitEditingArgs;
       onSubmitEditingArgs.text = GetTextFromRichEdit();
       onSubmitEditingArgs.eventCount = ++m_nativeEventCount;
+
+      if (windowsTextInputProps().submitBehaviour == "BlurAndSubmit")
+      {
+      }
       emitter->onSubmitEditing(onSubmitEditingArgs);
     }
 
