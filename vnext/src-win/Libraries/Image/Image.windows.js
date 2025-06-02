@@ -152,6 +152,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
     'aria-required': ariaRequired, // Windows
     height,
     src,
+    tooltip, // [Windows]
     ...restProps
   } = props;
 
@@ -194,6 +195,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
                   resizeMode={resizeMode}
                   tintColor={tintColor}
                   source={sources}
+                  tooltip={props.tooltip} // [Windows]
                   internal_analyticTag={analyticTag}
                 />
               )}
@@ -216,6 +218,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
             resizeMode={resizeMode}
             tintColor={tintColor}
             source={sources}
+            tooltip={props.tooltip} // [Windows]
             internal_analyticTag={analyticTag}
           />
         )}

@@ -471,9 +471,23 @@
     },
     {
       "type": "patch",
+      "file": "src-win/Libraries/Image/Image.d.ts",
+      "baseFile": "packages/react-native/Libraries/Image/Image.d.ts",
+      "baseHash": "8ffb08ab804cf484bf5c815fe48358e2fa637b2b",
+      "issue": 4590
+    },
+    {
+      "type": "patch",
       "file": "src-win/Libraries/Image/Image.windows.js",
       "baseFile": "packages/react-native/Libraries/Image/Image.ios.js",
       "baseHash": "c0bc913aa95b6d1309ba44ef7968ba58fc488427",
+      "issue": 4590
+    },
+    {
+      "type": "patch",
+      "file": "src-win/Libraries/Image/ImageProps.js",
+      "baseFile": "packages/react-native/Libraries/Image/ImageProps.js",
+      "baseHash": "a774ab52012fc1f054050f1707ad8e680af7d980",
       "issue": 4590
     },
     {

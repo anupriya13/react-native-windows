@@ -268,6 +268,8 @@ export default class Bootstrap extends React.Component<
               onLoadStart={() => console.log('onLoadStart')}
               onLoadEnd={() => console.log('onLoadEnd')}
               onProgress={this.handleOnProgress}
+              tintColor={"transparent"}
+              tooltip={'This is a tooltip'}
             />
           )}
         </View>
