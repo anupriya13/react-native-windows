@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Set up GitHub CLI
-        uses: cli/gh-action@v2
+        uses: dlvhdr/gh-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
