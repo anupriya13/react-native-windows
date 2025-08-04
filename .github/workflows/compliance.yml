@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        branch: ${{ github.event_name == 'schedule' && fromJson('["main","0.79-stable","0.78-stable"]') || fromJson('["${{ github.event.inputs.target_branch }}"]') }}
+        branch: ${{ github.event_name == 'schedule' && fromJson('["main","0.80-stable","0.79-stable","0.78-stable"]') || fromJson(format('["{0}"]', github.event.inputs.target_branch)) }}
 
     steps:
       - name: Install GitHub CLI
@@ -31,12 +31,9 @@ jobs:
           sudo apt update
           sudo apt install -y gh
 
-      - name: Authenticate GitHub CLI
+      - name: Clone repo using gh CLI
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: echo "$GH_TOKEN" | gh auth login --with-token
-
-      - name: Clone repo using gh CLI
         run: |
           gh repo clone "${{ github.repository }}" repo
           cd repo
@@ -80,10 +77,12 @@ jobs:
 
       - name: Create Pull Request via GitHub CLI
         working-directory: ./repo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr create \
             --title "chore: Refresh yarn.lock for ${{ matrix.branch }} (weekly)" \
-            --body "This PR regenerates the \`yarn.lock\` file for \`${{ matrix.branch }}\` to ensure dependencies are fresh. It runs automatically every Monday or can be manually triggered." \
+            --body "This PR regenerates the \`yarn.lock\` file for \`${{ matrix.branch }}\` to ensure dependencies are up-to-date. It runs automatically every Monday or can be manually triggered." \
             --head "chore/weekly-lock-refresh-${{ matrix.branch }}" \
             --base "${{ matrix.branch }}" \
             --label "dependencies" \
