@@ -54,7 +54,7 @@ jobs:
           echo "🧹 Removing yarn.lock..."
           rm -f yarn.lock
           echo "📦 Running yarn install without lifecycle scripts..."
-          yarn install --mode update-lockfile --ignore-scripts
+          yarn install --ignore-scripts
 
       - name: Commit and push changes via gh CLI
         working-directory: ./repo
