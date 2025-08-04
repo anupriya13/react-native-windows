@@ -47,13 +47,13 @@ jobs:
       - name: Install Yarn
         run: npm install -g yarn
 
-      - name: Delete yarn.lock and reinstall dependencies
+      - name: Delete yarn.lock and reinstall dependencies (skip scripts)
         working-directory: ./repo
         run: |
           echo "🧹 Removing yarn.lock..."
           rm -f yarn.lock
-          echo "📦 Running yarn install..."
-          yarn install
+          echo "📦 Running yarn install without lifecycle scripts..."
+          yarn install --ignore-scripts
 
       - name: Commit and push changes
         working-directory: ./repo
