@@ -1,0 +1,90 @@
+name: Weekly yarn.lock Refresh
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: "Branch to refresh yarn.lock"
+        required: true
+        default: main
+        type: choice
+        options:
+          - main
+          - 0.80-stable
+          - 0.79-stable
+          - 0.78-stable
+
+  schedule:
+    - cron: '0 3 * * 1'  # Every Monday at 3am UTC
+
+jobs:
+  refresh-lockfile:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        branch: ${{ github.event_name == 'schedule' && fromJson('["main","0.79-stable","0.78-stable"]') || fromJson('["${{ github.event.inputs.target_branch }}"]') }}
+
+    steps:
+      - name: Install GitHub CLI
+        run: |
+          sudo apt update
+          sudo apt install -y gh
+
+      - name: Authenticate GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GH_TOKEN" | gh auth login --with-token
+
+      - name: Clone repo using gh CLI
+        run: |
+          gh repo clone "${{ github.repository }}" repo
+          cd repo
+          git checkout "${{ matrix.branch }}"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Delete yarn.lock and reinstall dependencies
+        working-directory: ./repo
+        run: |
+          echo "🧹 Removing yarn.lock..."
+          rm -f yarn.lock
+          echo "📦 Running yarn install..."
+          yarn install
+
+      - name: Commit and push changes
+        working-directory: ./repo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          BRANCH="chore/weekly-lock-refresh-${{ matrix.branch }}"
+
+          if git diff --quiet; then
+            echo "🟢 No changes to commit."
+            exit 0
+          fi
+
+          git checkout -B "$BRANCH"
+          git add yarn.lock
+          git commit -m "chore: weekly yarn.lock refresh for ${{ matrix.branch }}"
+          git push --set-upstream origin "$BRANCH" || echo "🔁 Branch already exists"
+
+      - name: Create Pull Request via GitHub CLI
+        working-directory: ./repo
+        run: |
+          gh pr create \
+            --title "chore: Refresh yarn.lock for ${{ matrix.branch }} (weekly)" \
+            --body "This PR regenerates the \`yarn.lock\` file for \`${{ matrix.branch }}\` to ensure dependencies are fresh. It runs automatically every Monday or can be manually triggered." \
+            --head "chore/weekly-lock-refresh-${{ matrix.branch }}" \
+            --base "${{ matrix.branch }}" \
+            --label "dependencies" \
+            --repo "${{ github.repository }}" || echo "ℹ️ PR already exists."
