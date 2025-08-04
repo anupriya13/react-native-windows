@@ -80,15 +80,15 @@ jobs:
         working-directory: ./repo
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            set -e
-            if gh pr create \
-              --title "chore: Refresh yarn.lock for ${{ matrix.branch }} (weekly)" \
-              --body "This PR regenerates the \`yarn.lock\` file for \`${{ matrix.branch }}\` to ensure dependencies are up-to-date. It runs automatically every Monday or can be manually triggered." \
-              --head "chore/weekly-lock-refresh-${{ matrix.branch }}" \
-              --base "${{ matrix.branch }}" \
-              --repo "${{ github.repository }}"; then
-              echo "✅ PR created successfully for branch ${{ matrix.branch }}"
-            else
-              echo "ℹ️ PR may already exist or could not be created."
-            fi
+        run: |
+          set -e
+          if gh pr create \
+            --title "chore: Refresh yarn.lock for ${{ matrix.branch }} (weekly)" \
+            --body "This PR regenerates the \`yarn.lock\` file for \`${{ matrix.branch }}\` to ensure dependencies are up-to-date. It runs automatically every Monday or can be manually triggered." \
+            --head "chore/weekly-lock-refresh-${{ matrix.branch }}" \
+            --base "${{ matrix.branch }}" \
+            --repo "${{ github.repository }}"; then
+            echo "✅ PR created successfully for branch ${{ matrix.branch }}"
+          else
+            echo "ℹ️ PR may already exist or could not be created."
+          fi
