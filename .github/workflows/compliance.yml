@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        branch: ${{ github.event_name == 'schedule' && fromJson('["main","0.80-stable","0.79-stable","0.78-stable"]') || fromJson(format('["{0}"]', github.event.inputs.target_branch)) }}
+        branch: ${{ github.event_name == 'schedule' && fromJson('["main","0.80-stable","0.79-stable","0.78-stable"]') || fromJson(format('["%s"]', github.event.inputs.target_branch)) }}
 
     steps:
       - name: Install GitHub CLI
@@ -42,7 +42,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install Yarn
         run: npm install -g yarn
