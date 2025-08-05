@@ -51,10 +51,8 @@ jobs:
       - name: Delete yarn.lock and reinstall dependencies (skip scripts)
         working-directory: ./repo
         run: |
-          echo "🧹 Removing yarn.lock..."
-          rm -f yarn.lock
           echo "📦 Running yarn install without lifecycle scripts..."
-          yarn install --ignore-scripts
+          yarn install --ignore-scripts --frozen-lockfile
 
       - name: Commit and push changes via gh CLI
         working-directory: ./repo
