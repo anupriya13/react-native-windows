@@ -82,23 +82,19 @@ jobs:
           BRANCH="chore/yarn-lock-refresh-${{ matrix.branch }}-${{ github.run_id }}"
 
           if git diff --quiet yarn.lock; then
-            echo "🟢 No changes to yarn.lock. Exiting."
+            echo "🟢 No changes to yarn.lock. Skipping commit and PR."
+            echo "NO_CHANGES=true" >> $GITHUB_ENV
             exit 0
           fi
 
-          git checkout -B "$BRANCH"
+          git checkout -b "$BRANCH"
           git add yarn.lock
-          COMMIT_MSG="chore: yarn.lock refresh for ${{ matrix.branch }}"
-          if [[ -n "${{ github.event.inputs.package_name }}" ]]; then
-            COMMIT_MSG="$COMMIT_MSG (package: ${{ github.event.inputs.package_name }})"
-          else
-            COMMIT_MSG="$COMMIT_MSG (all packages)"
-          fi
-          git commit -m "$COMMIT_MSG"
-          git push --set-upstream "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$BRANCH"
+          git commit -m "chore: refresh yarn.lock for ${{ matrix.branch }}"
+          git push --force --set-upstream "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$BRANCH"
+          echo "NEW_BRANCH=$BRANCH" >> $GITHUB_ENV
 
       - name: Create Pull Request
-        working-directory: ./repo
+        if: env.NO_CHANGES != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
