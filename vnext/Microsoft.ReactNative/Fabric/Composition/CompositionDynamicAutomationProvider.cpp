@@ -1,10 +1,8 @@
 #include "pch.h"
 #include "CompositionDynamicAutomationProvider.h"
 #include <Fabric/ComponentView.h>
-#include <Fabric/Composition/CompositionAnnotationProvider.h>
 #include <Fabric/Composition/CompositionTextRangeProvider.h>
 #include <Fabric/Composition/ParagraphComponentView.h>
-#include <Fabric/Composition/ScrollViewComponentView.h>
 #include <Fabric/Composition/SwitchComponentView.h>
 #include <Fabric/Composition/TextInput/WindowsTextInputComponentView.h>
 #include <Unicode.h>
@@ -37,18 +35,14 @@ CompositionDynamicAutomationProvider::CompositionDynamicAutomationProvider(
                          strongView.as<winrt::Microsoft::ReactNative::Composition::ComponentView>(), this)
                          .try_as<ITextProvider2>();
   }
-
-  if (strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ViewComponentView>()) {
-    m_annotationProvider = winrt::make<CompositionAnnotationProvider>(
-                               strongView.as<winrt::Microsoft::ReactNative::Composition::ComponentView>(), this)
-                               .try_as<IAnnotationProvider>();
-  }
 }
 
+#ifdef USE_EXPERIMENTAL_WINUI3
 CompositionDynamicAutomationProvider::CompositionDynamicAutomationProvider(
     const winrt::Microsoft::ReactNative::Composition::ComponentView &componentView,
     const winrt::Microsoft::UI::Content::ChildSiteLink &childSiteLink) noexcept
     : m_view{componentView}, m_childSiteLink{childSiteLink} {}
+#endif // USE_EXPERIMENTAL_WINUI3
 
 HRESULT __stdcall CompositionDynamicAutomationProvider::Navigate(
     NavigateDirection direction,
@@ -56,6 +50,7 @@ HRESULT __stdcall CompositionDynamicAutomationProvider::Navigate(
   if (pRetVal == nullptr)
     return E_POINTER;
 
+#ifdef USE_EXPERIMENTAL_WINUI3
   if (m_childSiteLink) {
     if (direction == NavigateDirection_FirstChild || direction == NavigateDirection_LastChild) {
       auto fragment = m_childSiteLink.AutomationProvider().try_as<IRawElementProviderFragment>();
@@ -63,6 +58,7 @@ HRESULT __stdcall CompositionDynamicAutomationProvider::Navigate(
       return S_OK;
     }
   }
+#endif // USE_EXPERIMENTAL_WINUI3
 
   return UiaNavigateHelper(m_view.view(), direction, *pRetVal);
 }
@@ -235,12 +231,6 @@ HRESULT __stdcall CompositionDynamicAutomationProvider::GetPatternProvider(PATTE
     AddRef();
   }
 
-  if (patternId == UIA_ScrollPatternId &&
-      strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ScrollViewComponentView>()) {
-    *pRetVal = static_cast<IScrollProvider *>(this);
-    AddRef();
-  }
-
   if (patternId == UIA_ValuePatternId &&
       ((strongView
             .try_as<winrt::Microsoft::ReactNative::Composition::implementation::WindowsTextInputComponentView>() &&
@@ -288,11 +278,6 @@ HRESULT __stdcall CompositionDynamicAutomationProvider::GetPatternProvider(PATTE
   if (patternId == UIA_TextPattern2Id &&
       strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::WindowsTextInputComponentView>()) {
     m_textProvider.as<IUnknown>().copy_to(pRetVal);
-  }
-  if (patternId == UIA_AnnotationPatternId &&
-      strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ViewComponentView>() &&
-      accessibilityAnnotationHasValue(props->accessibilityAnnotation)) {
-    m_annotationProvider.as<IUnknown>().copy_to(pRetVal);
   }
 
   return S_OK;
@@ -356,8 +341,6 @@ long GetControlTypeFromString(const std::string &role) noexcept {
     return UIA_TreeControlTypeId;
   } else if (role == "treeitem") {
     return UIA_TreeItemControlTypeId;
-  } else if (role == "pane") {
-    return UIA_PaneControlTypeId;
   }
   assert(false);
   return UIA_GroupControlTypeId;
@@ -571,24 +554,8 @@ HRESULT __stdcall CompositionDynamicAutomationProvider::GetPropertyValue(PROPERT
           : SysAllocString(L"");
       break;
     }
-    case UIA_LevelPropertyId: {
-      pRetVal->vt = VT_I4;
-      pRetVal->lVal = props->accessibilityLevel;
-      break;
-    }
-    case UIA_AccessKeyPropertyId: {
-      pRetVal->vt = VT_BSTR;
-      auto accessKey = ::Microsoft::Common::Unicode::Utf8ToUtf16(props->accessibilityAccessKey.value_or(""));
-      pRetVal->bstrVal = SysAllocString(accessKey.c_str());
-      break;
-    }
-    case UIA_ItemTypePropertyId: {
-      pRetVal->vt = VT_BSTR;
-      auto itemtype = ::Microsoft::Common::Unicode::Utf8ToUtf16(props->accessibilityItemType.value_or(""));
-      pRetVal->bstrVal = SysAllocString(itemtype.c_str());
-      break;
-    }
   }
+
   return hr;
 }
 
@@ -636,156 +603,6 @@ HRESULT __stdcall CompositionDynamicAutomationProvider::ScrollIntoView() {
       ->StartBringIntoView(std::move(scrollOptions));
   DispatchAccessibilityAction(m_view, "scrollIntoView");
 
-  return S_OK;
-}
-
-HRESULT __stdcall CompositionDynamicAutomationProvider::get_HorizontalScrollPercent(double *pRetVal) {
-  BOOL horizontallyScrollable;
-  auto hr = get_HorizontallyScrollable(&horizontallyScrollable);
-  if (!SUCCEEDED(hr)) {
-    return hr;
-  }
-  if (!horizontallyScrollable) {
-    *pRetVal = UIA_ScrollPatternNoScroll;
-  } else {
-    auto strongView = m_view.view();
-    auto scrollComponentView =
-        strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ScrollViewComponentView>();
-    *pRetVal = scrollComponentView->getScrollPositionX();
-  }
-  return S_OK;
-}
-
-HRESULT __stdcall CompositionDynamicAutomationProvider::get_VerticalScrollPercent(double *pRetVal) {
-  BOOL verticallyScrollable;
-  auto hr = get_VerticallyScrollable(&verticallyScrollable);
-  if (!SUCCEEDED(hr)) {
-    return hr;
-  }
-  if (!verticallyScrollable) {
-    *pRetVal = UIA_ScrollPatternNoScroll;
-  } else {
-    auto strongView = m_view.view();
-    auto scrollComponentView =
-        strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ScrollViewComponentView>();
-    *pRetVal = scrollComponentView->getScrollPositionY();
-  }
-  return S_OK;
-}
-
-HRESULT __stdcall CompositionDynamicAutomationProvider::get_HorizontalViewSize(double *pRetVal) {
-  BOOL horizontallyScrollable;
-  auto hr = get_HorizontallyScrollable(&horizontallyScrollable);
-  if (!SUCCEEDED(hr)) {
-    return hr;
-  }
-  if (!horizontallyScrollable) {
-    *pRetVal = 100;
-  } else {
-    auto strongView = m_view.view();
-    auto scrollComponentView =
-        strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ScrollViewComponentView>();
-    *pRetVal = scrollComponentView->getHorizontalSize();
-  }
-  return S_OK;
-}
-
-HRESULT __stdcall CompositionDynamicAutomationProvider::get_VerticalViewSize(double *pRetVal) {
-  BOOL verticallyScrollable;
-  auto hr = get_VerticallyScrollable(&verticallyScrollable);
-  if (!SUCCEEDED(hr)) {
-    return hr;
-  }
-  if (!verticallyScrollable) {
-    *pRetVal = 100;
-  } else {
-    auto strongView = m_view.view();
-    auto scrollComponentView =
-        strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ScrollViewComponentView>();
-    *pRetVal = scrollComponentView->getVerticalSize();
-  }
-  return S_OK;
-}
-
-HRESULT __stdcall CompositionDynamicAutomationProvider::get_HorizontallyScrollable(BOOL *pRetVal) {
-  if (pRetVal == nullptr)
-    return E_POINTER;
-  auto strongView = m_view.view();
-
-  if (!strongView)
-    return UIA_E_ELEMENTNOTAVAILABLE;
-
-  auto props = std::static_pointer_cast<const facebook::react::ScrollViewProps>(
-      winrt::get_self<winrt::Microsoft::ReactNative::implementation::ComponentView>(strongView)->props());
-  if (props == nullptr)
-    return UIA_E_ELEMENTNOTAVAILABLE;
-  *pRetVal = (props->horizontal && props->scrollEnabled);
-  return S_OK;
-}
-
-HRESULT __stdcall CompositionDynamicAutomationProvider::get_VerticallyScrollable(BOOL *pRetVal) {
-  if (pRetVal == nullptr)
-    return E_POINTER;
-  auto strongView = m_view.view();
-
-  if (!strongView)
-    return UIA_E_ELEMENTNOTAVAILABLE;
-
-  auto props = std::static_pointer_cast<const facebook::react::ScrollViewProps>(
-      winrt::get_self<winrt::Microsoft::ReactNative::implementation::ComponentView>(strongView)->props());
-  if (props == nullptr)
-    return UIA_E_ELEMENTNOTAVAILABLE;
-  *pRetVal = (!props->horizontal && props->scrollEnabled);
-  return S_OK;
-}
-
-HRESULT __stdcall CompositionDynamicAutomationProvider::Scroll(
-    ScrollAmount horizontalAmount,
-    ScrollAmount verticalAmount) {
-  DispatchAccessibilityAction(m_view, "scroll");
-  auto strongView = m_view.view();
-  auto scrollComponentView =
-      strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ScrollViewComponentView>();
-  BOOL verticallyScrollable;
-  BOOL horizontallyScrollable;
-  float vertical = 0.0f;
-  float horizontal = 0.0f;
-  auto hr = get_VerticallyScrollable(&verticallyScrollable);
-  if (!SUCCEEDED(hr)) {
-    return hr;
-  }
-  if (verticallyScrollable) {
-    if (verticalAmount == ScrollAmount_LargeIncrement) {
-      scrollComponentView->pageDown(true);
-    } else if (verticalAmount == ScrollAmount_LargeDecrement) {
-      scrollComponentView->pageUp(true);
-    } else if (verticalAmount == ScrollAmount_SmallIncrement) {
-      scrollComponentView->lineDown(true);
-    } else if (verticalAmount == ScrollAmount_SmallDecrement) {
-      scrollComponentView->lineUp(true);
-    }
-  }
-  hr = get_HorizontallyScrollable(&horizontallyScrollable);
-  if (!SUCCEEDED(hr)) {
-    return hr;
-  }
-  if (horizontallyScrollable) {
-    if (horizontalAmount == ScrollAmount_LargeIncrement) {
-      scrollComponentView->pageDown(true);
-    } else if (horizontalAmount == ScrollAmount_LargeDecrement) {
-      scrollComponentView->pageUp(true);
-    } else if (horizontalAmount == ScrollAmount_SmallIncrement) {
-      scrollComponentView->lineRight(true);
-    } else if (horizontalAmount == ScrollAmount_SmallDecrement) {
-      scrollComponentView->lineLeft(true);
-    }
-  }
-  return S_OK;
-}
-
-HRESULT __stdcall CompositionDynamicAutomationProvider::SetScrollPercent(
-    double horiztonalPercent,
-    double verticalPercent) {
   return S_OK;
 }
 

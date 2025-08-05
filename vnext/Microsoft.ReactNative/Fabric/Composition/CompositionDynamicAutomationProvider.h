@@ -15,7 +15,6 @@ class CompositionDynamicAutomationProvider : public winrt::implements<
                                                  IRawElementProviderSimple,
                                                  IInvokeProvider,
                                                  IScrollItemProvider,
-                                                 IScrollProvider,
                                                  IValueProvider,
                                                  IRangeValueProvider,
                                                  IToggleProvider,
@@ -26,9 +25,11 @@ class CompositionDynamicAutomationProvider : public winrt::implements<
   CompositionDynamicAutomationProvider(
       const winrt::Microsoft::ReactNative::Composition::ComponentView &componentView) noexcept;
 
+#ifdef USE_EXPERIMENTAL_WINUI3
   CompositionDynamicAutomationProvider(
       const winrt::Microsoft::ReactNative::Composition::ComponentView &componentView,
       const winrt::Microsoft::UI::Content::ChildSiteLink &childContentLink) noexcept;
+#endif // USE_EXPERIMENTAL_WINUI3
 
   // inherited via IRawElementProviderFragment
   virtual HRESULT __stdcall Navigate(NavigateDirection direction, IRawElementProviderFragment **pRetVal) override;
@@ -50,16 +51,6 @@ class CompositionDynamicAutomationProvider : public winrt::implements<
 
   // inherited via IScrollItemProvider
   HRESULT __stdcall ScrollIntoView() override;
-
-  // inherited via IScrollProvider
-  HRESULT __stdcall get_HorizontalScrollPercent(double *pRetVal) override;
-  HRESULT __stdcall get_VerticalScrollPercent(double *pRetVal) override;
-  HRESULT __stdcall get_HorizontalViewSize(double *pRetVal) override;
-  HRESULT __stdcall get_VerticalViewSize(double *pRetVal) override;
-  HRESULT __stdcall get_HorizontallyScrollable(BOOL *pRetVal) override;
-  HRESULT __stdcall get_VerticallyScrollable(BOOL *pRetVal) override;
-  HRESULT __stdcall Scroll(ScrollAmount horizontalAmount, ScrollAmount verticalAmount) override;
-  HRESULT __stdcall SetScrollPercent(double horiztonalPercent, double verticalPercent) override;
 
   // inherited via IValueProvider
   virtual HRESULT __stdcall SetValue(LPCWSTR val) override;
@@ -101,10 +92,11 @@ class CompositionDynamicAutomationProvider : public winrt::implements<
  private:
   ::Microsoft::ReactNative::ReactTaggedView m_view;
   winrt::com_ptr<ITextProvider2> m_textProvider;
-  winrt::com_ptr<IAnnotationProvider> m_annotationProvider;
   std::vector<winrt::com_ptr<IRawElementProviderSimple>> m_selectionItems;
+#ifdef USE_EXPERIMENTAL_WINUI3
   // Non-null when this UIA node is the peer of a ContentIslandComponentView.
   winrt::Microsoft::UI::Content::ChildSiteLink m_childSiteLink{nullptr};
+#endif
 };
 
 } // namespace winrt::Microsoft::ReactNative::implementation

@@ -533,10 +533,7 @@ export function getRnwConfig(
   root: string,
   projectFile: string,
 ): Record<string, any> | undefined {
-  const pkgPath = path.join(root, 'package.json');
-  const pkgJson = fs.existsSync(pkgPath)
-    ? require(path.join(root, 'package.json'))
-    : {};
+  const pkgJson = require(path.join(root, 'package.json'));
 
   const config: Record<string, any> = pkgJson['react-native-windows'] ?? {};
 

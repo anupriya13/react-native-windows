@@ -249,7 +249,6 @@ namespace Microsoft.ReactNative
     JsiPreparedJavaScript PrepareJavaScript(IJsiByteBuffer buffer, String sourceUrl);
     JsiValueRef EvaluatePreparedJavaScript(JsiPreparedJavaScript js);
     Boolean DrainMicrotasks(Int32 maxMicrotasksHint);
-    void QueueMicrotask(JsiObjectRef callback);
     JsiObjectRef Global { get; };
     String Description { get; };
     Boolean IsInspectable { get; };

@@ -136,6 +136,7 @@ class ReactInstanceWin final : public Mso::ActiveObject<IReactInstanceInternal> 
   std::shared_ptr<Mso::React::IRedBoxHandler> GetRedBoxHandler() noexcept;
   std::function<void()> GetWaitingForDebuggerCallback() noexcept;
   std::function<void()> GetDebuggerAttachCallback() noexcept;
+  bool IsBridgeless() noexcept;
 
   void OnError(const Mso::ErrorCode &errorcode) noexcept;
   void OnErrorWithMessage(const std::string &errorMessage) noexcept;
@@ -187,7 +188,7 @@ class ReactInstanceWin final : public Mso::ActiveObject<IReactInstanceInternal> 
   mutable std::mutex m_mutex;
 
   // !Bridgeless
-  const Mso::ActiveReadableField<Mso::DispatchQueue> m_jsDispatchQueue{nullptr, Queue(), m_mutex};
+  const Mso::ActiveReadableField<Mso::DispatchQueue> m_jsDispatchQueue{Queue(), m_mutex};
   const Mso::ActiveReadableField<std::shared_ptr<facebook::react::MessageQueueThread>> m_jsMessageThread{
       Queue(),
       m_mutex};

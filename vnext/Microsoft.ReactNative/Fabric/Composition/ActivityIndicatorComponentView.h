@@ -53,8 +53,6 @@ struct ActivityIndicatorComponentView
   void updateVisualSize() noexcept;
   void updateProgressColor(const facebook::react::SharedColor &color) noexcept;
 
-  bool m_animationStopped{false};
-
   winrt::Microsoft::ReactNative::Composition::Experimental::IActivityVisual m_ActivityIndicatorVisual{nullptr};
 };
 

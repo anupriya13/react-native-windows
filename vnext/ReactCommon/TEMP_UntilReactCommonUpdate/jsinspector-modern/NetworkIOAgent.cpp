@@ -6,12 +6,9 @@
  */
 
 #include "NetworkIOAgent.h"
-#include "InspectorFlags.h"
-
+#include <utility>
 #include "Base64.h"
 #include "Utf8.h"
-
-#include <utility>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -30,7 +27,7 @@ static constexpr std::array kTextMIMETypePrefixes{
 // namespace { [Windows #13587]
 
 struct InitStreamResult {
-  uint32_t httpStatusCode;
+  int httpStatusCode;
   Headers headers;
   std::shared_ptr<Stream> stream;
 };
@@ -116,7 +113,7 @@ class Stream : public NetworkRequestListener,
     processPending();
   }
 
-  void onHeaders(uint32_t httpStatusCode, const Headers& headers) override {
+  void onHeaders(int httpStatusCode, const Headers& headers) override {
     // Find content-type through case-insensitive search of headers.
     for (const auto& [name, value] : headers) {
       std::string lowerName = name;
@@ -266,14 +263,6 @@ bool NetworkIOAgent::handleRequest(
     handleIoClose(req);
     return true;
   }
-
-  if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
-    if (req.method == "Network.enable") {
-      frontendChannel_(cdp::jsonResult(req.id));
-      return true;
-    }
-  }
-
   return false;
 }
 

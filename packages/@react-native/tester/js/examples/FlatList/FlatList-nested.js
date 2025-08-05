@@ -9,15 +9,13 @@
  */
 
 'use strict';
-
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
 import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import RNTesterPage from '../../components/RNTesterPage';
-import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {useCallback, useEffect, useMemo, useReducer} from 'react';
+import {useCallback, useEffect, useReducer} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 
 type OuterItem = 'head' | 'vertical' | 'horizontal' | 'filler';
@@ -79,14 +77,6 @@ function reducer(state: ItemsState, action: ItemsAction): ItemsState {
 function NestedListExample(): React.Node {
   const [outer, dispatchOuter] = useReducer(reducer, initialItemsState);
   const [inner, dispatchInner] = useReducer(reducer, initialItemsState);
-  const sortedInnerViewableItems = useMemo(
-    () => [...inner.viewableItems].sort((a, b) => a - b).join(', '),
-    [inner.viewableItems],
-  );
-  const sortedInnerRenderedItems = useMemo(
-    () => [...inner.renderedItems].sort((a, b) => a - b).join(', '),
-    [inner.renderedItems],
-  );
 
   const onViewableItemsChanged = useCallback(
     ({
@@ -108,30 +98,38 @@ function NestedListExample(): React.Node {
 
   return (
     <RNTesterPage noScroll={true}>
-      <RNTesterText style={styles.debugText}>
+      <Text style={styles.debugText}>
         <Text style={styles.debugTextHeader}>Outer Viewable:{'\n'}</Text>
         {outerItems
           .map((item, i) => ({item, i}))
           .filter(o => outer.viewableItems.includes(o.i))
           .map(({item, i}) => `${i} (${item})`)
           .join(', ')}
-      </RNTesterText>
-      <RNTesterText style={styles.debugText}>
+      </Text>
+      <Text style={styles.debugText}>
         <Text style={styles.debugTextHeader}>Outer Rendered:{'\n'}</Text>
         {outerItems
           .map((item, i) => ({item, i}))
           .filter(o => outer.renderedItems.includes(o.i))
           .map(({item, i}) => `${i} (${item})`)
           .join(', ')}
-      </RNTesterText>
-      <RNTesterText style={styles.debugText}>
+      </Text>
+      <Text style={styles.debugText}>
         <Text style={styles.debugTextHeader}>Inner Viewable:{'\n'}</Text>
-        {sortedInnerViewableItems}
-      </RNTesterText>
-      <RNTesterText style={styles.debugText}>
+        {
+          // $FlowFixMe[react-rule-hook-mutation]
+          // $FlowFixMe[missing-local-annot]
+          inner.viewableItems.sort((a, b) => a - b).join(', ')
+        }
+      </Text>
+      <Text style={styles.debugText}>
         <Text style={styles.debugTextHeader}>Inner Rendered:{'\n'}</Text>
-        {sortedInnerRenderedItems}
-      </RNTesterText>
+        {
+          // $FlowFixMe[react-rule-hook-mutation]
+          // $FlowFixMe[missing-local-annot]
+          inner.renderedItems.sort((a, b) => a - b).join(', ')
+        }
+      </Text>
 
       <FlatList
         data={outerItems}

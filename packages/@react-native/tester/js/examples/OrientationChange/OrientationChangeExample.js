@@ -10,41 +10,51 @@
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
-import {useEffect, useState} from 'react';
 import {DeviceEventEmitter, View} from 'react-native';
+import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
-const OrientationChangeExample = (): React.Node => {
-  const [state, setState] = useState({
+class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
+  _orientationSubscription: EventSubscription;
+
+  state:
+    | any
+    | {
+        currentOrientation: string,
+        isLandscape: boolean,
+        orientationDegrees: number,
+      } = {
     currentOrientation: '',
     orientationDegrees: 0,
     isLandscape: false,
-  });
+  };
 
-  useEffect(() => {
-    const onOrientationChange = (orientation: Object) => {
-      setState({
-        currentOrientation: orientation.name,
-        orientationDegrees: orientation.rotationDegrees,
-        isLandscape: orientation.isLandscape,
-      });
-    };
-
-    const orientationSubscription = DeviceEventEmitter.addListener(
+  componentDidMount() {
+    this._orientationSubscription = DeviceEventEmitter.addListener(
       'namedOrientationDidChange',
-      onOrientationChange,
+      this._onOrientationChange,
     );
+  }
 
-    return () => {
-      orientationSubscription.remove();
-    };
-  }, []);
+  componentWillUnmount() {
+    this._orientationSubscription.remove();
+  }
 
-  return (
-    <View>
-      <RNTesterText>{JSON.stringify(state)}</RNTesterText>
-    </View>
-  );
-};
+  _onOrientationChange = (orientation: Object) => {
+    this.setState({
+      currentOrientation: orientation.name,
+      orientationDegrees: orientation.rotationDegrees,
+      isLandscape: orientation.isLandscape,
+    });
+  };
+
+  render(): React.Node {
+    return (
+      <View>
+        <RNTesterText>{JSON.stringify(this.state)}</RNTesterText>
+      </View>
+    );
+  }
+}
 
 exports.title = 'OrientationChangeExample';
 exports.category = 'Basic';

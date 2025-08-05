@@ -4,21 +4,43 @@
  * @flow
  * @format
  */
-
-import type {AlertOptions, AlertType, Buttons} from './Alert.flow';
-
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerWindows';
 const NativeDialogManagerWindows =
   require('../NativeModules/specs/NativeDialogManagerWindows').default;
 
-export type * from './Alert.flow';
+export type AlertType =
+  | 'default'
+  | 'plain-text'
+  | 'secure-text'
+  | 'login-password';
+export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
+export type Buttons = Array<{
+  text?: string,
+  onPress?: ?Function,
+  isPreferred?: boolean,
+  style?: AlertButtonStyle,
+  ...
+}>;
 
+type Options = {
+  cancelable?: ?boolean,
+  userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
+  onDismiss?: ?() => void,
+  rootTag?: number,
+  ...
+};
+
+/**
+ * Launches an alert dialog with the specified title and message.
+ *
+ * See https://reactnative.dev/docs/alert
+ */
 class Alert {
   static alert(
     title: ?string,
     message?: ?string,
     buttons?: Buttons,
-    options?: AlertOptions,
+    options?: Options,
   ): void {
     if (!NativeDialogManagerWindows) {
       return;
@@ -29,6 +51,7 @@ class Alert {
       title: title || '',
       message: message || '',
       cancelable: false,
+      rootTag: options && options.rootTag,
     };
 
     if (options && options.cancelable) {
@@ -97,7 +120,7 @@ class Alert {
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
     keyboardType?: string,
-    options?: AlertOptions,
+    options?: Options,
   ): void {
     throw new Error(
       'Alert.prompt not currently implemented in react-native-windows',
@@ -105,4 +128,4 @@ class Alert {
   }
 }
 
-export default Alert;
+module.exports = Alert;

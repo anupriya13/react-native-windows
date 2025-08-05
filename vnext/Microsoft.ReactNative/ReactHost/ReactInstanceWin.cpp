@@ -4,7 +4,6 @@
 #include "ReactInstanceWin.h"
 
 #include <AppModelHelpers.h>
-#include <CallInvoker.h>
 #include <CppRuntimeOptions.h>
 #include <CreateInstance.h>
 #include <CreateModules.h>
@@ -65,7 +64,6 @@
 #include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/PlatformTimerRegistry.h>
 #include <react/runtime/TimerManager.h>
-#include <react/threading/MessageQueueThreadImpl.h>
 #endif
 
 #if !defined(CORE_ABI) && !defined(USE_FABRIC)
@@ -352,10 +350,12 @@ void ReactInstanceWin::LoadModules(
 #endif
 
 #if !defined(CORE_ABI) && !defined(USE_FABRIC)
-  registerTurboModule(
-      L"UIManager",
-      // TODO: Use MakeTurboModuleProvider after it satisfies ReactNativeSpecs::UIManagerSpec
-      winrt::Microsoft::ReactNative::MakeModuleProvider<::Microsoft::ReactNative::UIManager>());
+  if (!IsBridgeless()) {
+    registerTurboModule(
+        L"UIManager",
+        // TODO: Use MakeTurboModuleProvider after it satisfies ReactNativeSpecs::UIManagerSpec
+        winrt::Microsoft::ReactNative::MakeModuleProvider<::Microsoft::ReactNative::UIManager>());
+  }
 #endif
 
 #ifndef CORE_ABI
@@ -489,7 +489,7 @@ void ReactInstanceWin::LoadModules(
 //! Initialize() is called from the native queue.
 void ReactInstanceWin::Initialize() noexcept {
 #ifdef USE_FABRIC
-  if (Microsoft::ReactNative::IsFabricEnabled(m_reactContext->Properties())) {
+  if (IsBridgeless()) {
     InitializeBridgeless();
   } else
 #endif
@@ -643,10 +643,15 @@ void ReactInstanceWin::InitializeBridgeless() noexcept {
             // null moduleProvider since native modules are not supported in bridgeless
             LoadModules(devSettings, nullptr, m_options.TurboModuleProvider);
 
-            auto jsMessageThread = std::make_shared<facebook::react::MessageQueueThreadImpl>();
-            m_jsMessageThread.Exchange(jsMessageThread);
-
-            std::shared_ptr<facebook::react::CallInvoker> callInvoker;
+            auto jsDispatchQueue =
+                Mso::DispatchQueue::MakeLooperQueue(CreateDispatchQueueSettings(m_reactContext->Notifications()));
+            auto jsDispatcher =
+                winrt::make<winrt::Microsoft::ReactNative::implementation::ReactDispatcher>(Mso::Copy(jsDispatchQueue));
+            m_options.Properties.Set(ReactDispatcherHelper::JSDispatcherProperty(), jsDispatcher);
+            m_jsMessageThread.Exchange(std::make_shared<Mso::React::MessageDispatchQueue>(
+                jsDispatchQueue,
+                Mso::MakeWeakMemberFunctor(this, &ReactInstanceWin::OnError),
+                Mso::Copy(m_whenDestroyed)));
 
             m_jsMessageThread.Load()->runOnQueueSync([&]() {
               SetJSThreadDescription();
@@ -669,11 +674,11 @@ void ReactInstanceWin::InitializeBridgeless() noexcept {
               }
 
               m_jsiRuntimeHolder = std::make_shared<Microsoft::ReactNative::HermesRuntimeHolder>(
-                  devSettings, jsMessageThread, CreatePreparedScriptStore());
+                  devSettings, m_jsMessageThread.Load(), CreatePreparedScriptStore());
               auto jsRuntime = std::make_unique<Microsoft::ReactNative::HermesJSRuntime>(m_jsiRuntimeHolder);
               jsRuntime->getRuntime();
               m_bridgelessReactInstance = std::make_unique<facebook::react::ReactInstance>(
-                  std::move(jsRuntime), jsMessageThread, timerManager, jsErrorHandlingFunc);
+                  std::move(jsRuntime), m_jsMessageThread.Load(), timerManager, jsErrorHandlingFunc);
 
               auto bufferedRuntimeExecutor = m_bridgelessReactInstance->getBufferedRuntimeExecutor();
               timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
@@ -681,70 +686,56 @@ void ReactInstanceWin::InitializeBridgeless() noexcept {
               Microsoft::ReactNative::SchedulerSettings::SetRuntimeScheduler(
                   winrt::Microsoft::ReactNative::ReactPropertyBag(m_options.Properties),
                   m_bridgelessReactInstance->getRuntimeScheduler());
+            });
 
-              callInvoker = std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(
-                  m_bridgelessReactInstance->getRuntimeScheduler());
+            facebook::react::ReactInstance::JSRuntimeFlags options;
+            m_bridgelessReactInstance->initializeRuntime(options, [=](facebook::jsi::Runtime &runtime) {
+              auto logger = [loggingHook = GetLoggingCallback()](const std::string &message, unsigned int logLevel) {
+                if (loggingHook)
+                  loggingHook(static_cast<facebook::react::RCTLogLevel>(logLevel), message.c_str());
+              };
+              facebook::react::bindNativeLogger(runtime, logger);
 
-              winrt::Microsoft::ReactNative::implementation::CallInvoker::SetProperties(
-                  ReactPropertyBag(m_options.Properties),
-                  winrt::make<winrt::Microsoft::ReactNative::implementation::CallInvoker>(
-                      *m_reactContext, std::shared_ptr<facebook::react::CallInvoker>(callInvoker)));
+              auto turboModuleManager = std::make_shared<facebook::react::TurboModuleManager>(
+                  m_options.TurboModuleProvider,
+                  std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(
+                      m_bridgelessReactInstance->getRuntimeScheduler()));
+
+              auto binding =
+                  [turboModuleManager](const std::string &name) -> std::shared_ptr<facebook::react::TurboModule> {
+                return turboModuleManager->getModule(name);
+              };
+
+              // Use a legacy native module binding that always returns null
+              // This means that calls to NativeModules.XXX will always return null, rather than crashing on access
+              auto legacyNativeModuleBinding =
+                  [](const std::string & /*name*/) -> std::shared_ptr<facebook::react::TurboModule> { return nullptr; };
+
+              facebook::react::TurboModuleBinding::install(
+                  runtime,
+                  std::function(binding),
+                  std::function(legacyNativeModuleBinding),
+                  m_options.TurboModuleProvider->LongLivedObjectCollection());
+
+              auto componentDescriptorRegistry =
+                  Microsoft::ReactNative::WindowsComponentDescriptorRegistry::FromProperties(
+                      winrt::Microsoft::ReactNative::ReactPropertyBag(m_options.Properties));
+              auto hasComponentProvider = [componentDescriptorRegistry](const std::string &name) -> bool {
+                return componentDescriptorRegistry->hasComponentProvider(
+                    facebook::react::componentNameByReactViewName(name));
+              };
+              facebook::react::bindHasComponentProvider(runtime, std::move(hasComponentProvider));
+
+              // init TurboModule
+              for (const auto &moduleName : turboModuleManager->getEagerInitModuleNames()) {
+                turboModuleManager->getModule(moduleName);
+              }
             });
 
             m_options.TurboModuleProvider->SetReactContext(
                 winrt::make<implementation::ReactContext>(Mso::Copy(m_reactContext)));
 
-            facebook::react::ReactInstance::JSRuntimeFlags options;
-            m_bridgelessReactInstance->initializeRuntime(
-                options,
-                [=, onCreated = m_options.OnInstanceCreated, reactContext = m_reactContext](
-                    facebook::jsi::Runtime &runtime) {
-                  auto logger = [loggingHook = GetLoggingCallback()](
-                                    const std::string &message, unsigned int logLevel) {
-                    if (loggingHook)
-                      loggingHook(static_cast<facebook::react::RCTLogLevel>(logLevel), message.c_str());
-                  };
-                  facebook::react::bindNativeLogger(runtime, logger);
-
-                  auto turboModuleManager =
-                      std::make_shared<facebook::react::TurboModuleManager>(m_options.TurboModuleProvider, callInvoker);
-
-                  auto binding =
-                      [turboModuleManager](const std::string &name) -> std::shared_ptr<facebook::react::TurboModule> {
-                    return turboModuleManager->getModule(name);
-                  };
-
-                  // Use a legacy native module binding that always returns null
-                  // This means that calls to NativeModules.XXX will always return null, rather than crashing on access
-                  auto legacyNativeModuleBinding =
-                      [](const std::string & /*name*/) -> std::shared_ptr<facebook::react::TurboModule> {
-                    return nullptr;
-                  };
-
-                  facebook::react::TurboModuleBinding::install(
-                      runtime,
-                      std::function(binding),
-                      std::function(legacyNativeModuleBinding),
-                      m_options.TurboModuleProvider->LongLivedObjectCollection());
-
-                  auto componentDescriptorRegistry =
-                      Microsoft::ReactNative::WindowsComponentDescriptorRegistry::FromProperties(
-                          winrt::Microsoft::ReactNative::ReactPropertyBag(m_options.Properties));
-                  auto hasComponentProvider = [componentDescriptorRegistry](const std::string &name) -> bool {
-                    return componentDescriptorRegistry->hasComponentProvider(
-                        facebook::react::componentNameByReactViewName(name));
-                  };
-                  facebook::react::bindHasComponentProvider(runtime, std::move(hasComponentProvider));
-
-                  // init TurboModule
-                  for (const auto &moduleName : turboModuleManager->getEagerInitModuleNames()) {
-                    turboModuleManager->getModule(moduleName);
-                  }
-
-                  if (onCreated) {
-                    onCreated.Get()->Invoke(reactContext);
-                  }
-                });
+            FireInstanceCreatedCallback();
 
             LoadJSBundlesBridgeless(devSettings);
             SetupHMRClient();
@@ -1101,9 +1092,9 @@ Mso::Future<void> ReactInstanceWin::Destroy() noexcept {
         }
         this->m_bridgelessReactInstance = nullptr;
         jsMessageThread->quitSynchronous();
-        m_whenDestroyed.SetValue();
       });
     }
+    m_jsDispatchQueue.Exchange(nullptr);
   }
 #endif
 
@@ -1121,18 +1112,12 @@ ReactInstanceState ReactInstanceWin::State() const noexcept {
 void ReactInstanceWin::InitJSMessageThread() noexcept {
   m_instance.Exchange(std::make_shared<facebook::react::Instance>());
 
-  auto callInvoker = m_instance.Load()->getJSCallInvoker();
   auto scheduler = Mso::MakeJSCallInvokerScheduler(
       CreateDispatchQueueSettings(m_reactContext->Notifications()),
-      std::shared_ptr<facebook::react::CallInvoker>(callInvoker),
+      m_instance.Load()->getJSCallInvoker(),
       Mso::MakeWeakMemberFunctor(this, &ReactInstanceWin::OnError),
       Mso::Copy(m_whenDestroyed));
   auto jsDispatchQueue = Mso::DispatchQueue::MakeCustomQueue(Mso::CntPtr(scheduler));
-
-  winrt::Microsoft::ReactNative::implementation::CallInvoker::SetProperties(
-      ReactPropertyBag(m_options.Properties),
-      winrt::make<winrt::Microsoft::ReactNative::implementation::CallInvoker>(
-          *m_reactContext, std::shared_ptr<facebook::react::CallInvoker>(callInvoker)));
 
   auto jsDispatcher =
       winrt::make<winrt::Microsoft::ReactNative::implementation::ReactDispatcher>(Mso::Copy(jsDispatchQueue));
@@ -1174,6 +1159,11 @@ void ReactInstanceWin::InitUIMessageThread() noexcept {
       [batchingUIThread, instance = std::weak_ptr<facebook::react::Instance>(m_instance.Load())]() noexcept {
         batchingUIThread->decoratedNativeCallInvokerReady(instance);
       });
+}
+
+bool ReactInstanceWin::IsBridgeless() noexcept {
+  return winrt::Microsoft::ReactNative::implementation::QuirkSettings::GetIsBridgeless(
+      winrt::Microsoft::ReactNative::ReactPropertyBag(m_reactContext->Properties()));
 }
 
 #if !defined(CORE_ABI) && !defined(USE_FABRIC)

@@ -574,4 +574,4 @@ const verticalAlignToTextAlignVerticalMap = {
   middle: 'center',
 };
 
-export default Text;
+module.exports = Text;

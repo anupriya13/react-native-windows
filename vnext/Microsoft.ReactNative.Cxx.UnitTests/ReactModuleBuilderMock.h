@@ -70,7 +70,6 @@ struct ReactModuleBuilderMock {
 
  public: // IReactModuleBuilder
   void AddInitializer(InitializerDelegate const &initializer) noexcept;
-  void AddJsiInitializer(JsiInitializerDelegate const &initializer) noexcept;
   void AddConstantProvider(ConstantProviderDelegate const &constantProvider) noexcept;
   void AddMethod(hstring const &name, MethodReturnType returnType, MethodDelegate const &method) noexcept;
   void AddSyncMethod(hstring const &name, SyncMethodDelegate const &method) noexcept;
@@ -101,7 +100,6 @@ struct ReactModuleBuilderMock {
  private:
   IReactContext m_reactContext{nullptr};
   std::vector<InitializerDelegate> m_initializers;
-  std::vector<JsiInitializerDelegate> m_jsiinitializers;
   std::vector<ConstantProviderDelegate> m_constantProviders;
   std::map<std::wstring, std::tuple<MethodReturnType, MethodDelegate>> m_methods;
   std::map<std::wstring, SyncMethodDelegate> m_syncMethods;
@@ -131,10 +129,6 @@ struct ReactContextMock : implements<ReactContextMock, IReactContext> {
   }
 
   IReactDispatcher JSDispatcher() noexcept {
-    VerifyElseCrashSz(false, "Not implemented");
-  }
-
-  CallInvoker CallInvoker() noexcept {
     VerifyElseCrashSz(false, "Not implemented");
   }
 
@@ -222,7 +216,6 @@ struct ReactModuleBuilderImpl : implements<ReactModuleBuilderImpl, IReactModuleB
 
  public: // IReactModuleBuilder
   void AddInitializer(InitializerDelegate const &initializer) noexcept;
-  void AddJsiInitializer(JsiInitializerDelegate const &initializer) noexcept;
   void AddConstantProvider(ConstantProviderDelegate const &constantProvider) noexcept;
   void AddMethod(hstring const &name, MethodReturnType returnType, MethodDelegate const &method) noexcept;
   void AddSyncMethod(hstring const &name, SyncMethodDelegate const &method) noexcept;
@@ -344,10 +337,6 @@ inline ReactModuleBuilderImpl::ReactModuleBuilderImpl(ReactModuleBuilderMock &mo
 
 inline void ReactModuleBuilderImpl::AddInitializer(InitializerDelegate const &initializer) noexcept {
   m_mock.AddInitializer(initializer);
-}
-
-inline void ReactModuleBuilderImpl::AddJsiInitializer(JsiInitializerDelegate const &initializer) noexcept {
-  m_mock.AddJsiInitializer(initializer);
 }
 
 inline void ReactModuleBuilderImpl::AddConstantProvider(ConstantProviderDelegate const &constantProvider) noexcept {

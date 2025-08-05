@@ -10,14 +10,14 @@
 
 'use strict';
 
-import * as React from 'react';
-import {useEffect} from 'react';
-import {NativeModules, View} from 'react-native';
+const React = require('react');
+const ReactNative = require('react-native');
+const {View} = ReactNative;
 
-const {TestModule, RNTesterTestModule} = NativeModules;
+const {TestModule, RNTesterTestModule} = ReactNative.NativeModules;
 
-function SyncMethodTest(): React.Node {
-  useEffect(() => {
+class SyncMethodTest extends React.Component<{...}> {
+  componentDidMount(): void {
     if (
       RNTesterTestModule.echoString('test string value') !== 'test string value'
     ) {
@@ -41,9 +41,13 @@ function SyncMethodTest(): React.Node {
         );
       }
     });
-  }, []);
+  }
 
-  return <View />;
+  render(): React.Node {
+    return <View />;
+  }
 }
 
-export default SyncMethodTest;
+SyncMethodTest.displayName = 'SyncMethodTest';
+
+module.exports = SyncMethodTest;

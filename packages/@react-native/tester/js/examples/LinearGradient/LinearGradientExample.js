@@ -19,13 +19,12 @@ import {Platform, PlatformColor, StyleSheet, View} from 'react-native';
 type Props = $ReadOnly<{
   style: ViewStyleProp,
   testID?: string,
-  children?: React.Node,
 }>;
 
 function GradientBox(props: Props): React.Node {
   return (
     <View style={[styles.box, props.style]} testID={props.testID}>
-      {props.children}
+      <RNTesterText style={styles.text}>Linear Gradient</RNTesterText>
     </View>
   );
 }
@@ -57,9 +56,8 @@ exports.examples = [
           style={{
             experimental_backgroundImage: 'linear-gradient(#e66465, #9198e5);',
           }}
-          testID="linear-gradient-basic">
-          <RNTesterText style={styles.text}>Linear Gradient</RNTesterText>
-        </GradientBox>
+          testID="linear-gradient-basic"
+        />
       );
     },
   },
@@ -222,41 +220,6 @@ exports.examples = [
               },
             ],
           }}
-        />
-      );
-    },
-  },
-  {
-    title: 'Transition hint',
-    render(): React.Node {
-      return (
-        <GradientBox
-          style={{
-            experimental_backgroundImage: 'linear-gradient(red, 40%, blue)',
-          }}
-          testID="linear-gradient-transition-hint"
-        />
-      );
-    },
-  },
-  {
-    title: 'with px and % combination',
-    render(): React.Node {
-      return (
-        <GradientBox
-          style={{
-            experimental_backgroundImage: `linear-gradient(
-              to right,
-              #f15a24 0%,
-              #f15a24 50px,
-              #fbb03b 50px,
-              35%,
-              #29abe2 65%,
-              180px,
-              #2e3192 100%
-            );`,
-          }}
-          testID="linear-gradient-transition-hint"
         />
       );
     },

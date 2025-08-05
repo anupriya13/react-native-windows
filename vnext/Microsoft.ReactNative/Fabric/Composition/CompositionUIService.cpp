@@ -25,6 +25,8 @@ void CompositionUIService::SetCompositor(
       CompositionContextPropertyId(),
       winrt::Microsoft::ReactNative::Composition::Experimental::MicrosoftCompositionContextHelper::CreateContext(
           compositor));
+  // Default to using Bridgeless mode when using fabric
+  winrt::Microsoft::ReactNative::implementation::QuirkSettings::SetIsBridgeless(properties, !!compositor);
 }
 
 winrt::Microsoft::UI::Composition::Compositor CompositionUIService::GetCompositor(

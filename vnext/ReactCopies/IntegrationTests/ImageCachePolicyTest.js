@@ -10,13 +10,10 @@
 
 'use strict';
 
-import type {ImageURISource} from 'react-native/Libraries/Image/ImageSource';
-
-import * as React from 'react';
-import {useEffect, useState} from 'react';
-import {Image, NativeModules, StyleSheet, Text, View} from 'react-native';
-
-const {TestModule} = NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image, View, Text, StyleSheet} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 /*
  * The reload and force-cache tests don't actually verify that the complete functionality.
@@ -30,70 +27,88 @@ const {TestModule} = NativeModules;
 
 const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'];
 
-function ImageCachePolicyTest(): React.Node {
-  const [state, setState] = useState({
-    'only-if-cached': undefined,
-    default: undefined,
-    reload: undefined,
-    'force-cache': undefined,
-  });
+type Props = {...};
+type State = {
+  'only-if-cached'?: boolean,
+  default?: boolean,
+  reload?: boolean,
+  'force-cache'?: boolean,
+  ...
+};
 
-  const testComplete = (
-    name: $NonMaybeType<ImageURISource['cache']>,
-    pass: boolean,
-  ) => {
-    setState(prevState => ({
-      ...prevState,
-      [name]: pass,
-    }));
-  };
+class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
+  state: $FlowFixMe | {...} = {};
 
-  useEffect(() => {
-    const results = TESTS.map(key => state[key]);
+  shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
+    const results: Array<?boolean> = TESTS.map(x => nextState[x]);
 
     if (!results.includes(undefined)) {
-      const result = results.reduce((x, y) => (x === y) === true, true);
+      const result: boolean = results.reduce(
+        (x, y) => (x === y) === true,
+        true,
+      );
       TestModule.markTestPassed(result);
     }
-  }, [state]);
 
-  return (
-    <View style={styles.container}>
-      <Text>Hello</Text>
-      <Image
-        source={getImageSource('only-if-cached')}
-        onLoad={() => testComplete('only-if-cached', false)}
-        onError={() => testComplete('only-if-cached', true)}
-        style={styles.base}
-      />
-      <Image
-        source={getImageSource('default')}
-        onLoad={() => testComplete('default', true)}
-        onError={() => testComplete('default', false)}
-        style={styles.base}
-      />
-      <Image
-        source={getImageSource('reload')}
-        onLoad={() => testComplete('reload', true)}
-        onError={() => testComplete('reload', false)}
-        style={styles.base}
-      />
-      <Image
-        source={getImageSource('force-cache')}
-        onLoad={() => testComplete('force-cache', true)}
-        onError={() => testComplete('force-cache', false)}
-        style={styles.base}
-      />
-    </View>
-  );
+    return false;
+  }
+
+  testComplete(name: string, pass: boolean) {
+    this.setState({[name]: pass});
+  }
+
+  render(): React.Node {
+    return (
+      <View style={styles.container}>
+        <Text>Hello</Text>
+        <Image
+          source={{
+            uri:
+              'https://raw.githubusercontent.com/facebook/react-native/HEAD/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
+              Date.now(),
+            cache: 'only-if-cached',
+          }}
+          onLoad={() => this.testComplete('only-if-cached', false)}
+          onError={() => this.testComplete('only-if-cached', true)}
+          style={styles.base}
+        />
+        <Image
+          source={{
+            uri:
+              'https://raw.githubusercontent.com/facebook/react-native/HEAD/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
+              Date.now(),
+            cache: 'default',
+          }}
+          onLoad={() => this.testComplete('default', true)}
+          onError={() => this.testComplete('default', false)}
+          style={styles.base}
+        />
+        <Image
+          source={{
+            uri:
+              'https://raw.githubusercontent.com/facebook/react-native/HEAD/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
+              Date.now(),
+            cache: 'reload',
+          }}
+          onLoad={() => this.testComplete('reload', true)}
+          onError={() => this.testComplete('reload', false)}
+          style={styles.base}
+        />
+        <Image
+          source={{
+            uri:
+              'https://raw.githubusercontent.com/facebook/react-native/HEAD/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
+              Date.now(),
+            cache: 'force-cache',
+          }}
+          onLoad={() => this.testComplete('force-cache', true)}
+          onError={() => this.testComplete('force-cache', false)}
+          style={styles.base}
+        />
+      </View>
+    );
+  }
 }
-
-const getImageSource = (cache: ImageURISource['cache']) => ({
-  uri:
-    'https://raw.githubusercontent.com/facebook/react-native/HEAD/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
-    Date.now(),
-  cache,
-});
 
 const styles = StyleSheet.create({
   container: {
@@ -105,4 +120,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImageCachePolicyTest;
+ImageCachePolicyTest.displayName = 'ImageCachePolicyTest';
+
+module.exports = ImageCachePolicyTest;

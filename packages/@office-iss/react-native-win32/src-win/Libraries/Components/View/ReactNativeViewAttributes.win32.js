@@ -91,4 +91,4 @@ const ReactNativeViewAttributes = {
   RCTView: RCTView,
 };
 
-export default ReactNativeViewAttributes;
+module.exports = ReactNativeViewAttributes;

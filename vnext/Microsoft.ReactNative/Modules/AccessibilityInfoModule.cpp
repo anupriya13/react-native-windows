@@ -22,11 +22,12 @@ void AccessibilityInfo::Initialize(winrt::Microsoft::ReactNative::ReactContext c
 }
 
 void AccessibilityInfo::isReduceMotionEnabled(std::function<void(bool)> const &onSuccess) noexcept {
-  m_context.UIDispatcher().Post([weakThis = weak_from_this(), onSuccess] {
+  auto jsDispatcher = m_context.JSDispatcher();
+  m_context.UIDispatcher().Post([weakThis = weak_from_this(), jsDispatcher, onSuccess] {
     if (auto strongThis = weakThis.lock()) {
       winrt::Windows::UI::ViewManagement::UISettings uiSettings;
       auto animationsEnabled = uiSettings.AnimationsEnabled();
-      onSuccess(!animationsEnabled);
+      jsDispatcher.Post([animationsEnabled, onSuccess] { onSuccess(!animationsEnabled); });
     }
   });
 }

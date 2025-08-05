@@ -32,14 +32,11 @@ const TESTS = [
   require('./GlobalEvalWithSourceUrlTest'),
 ];
 
-TESTS.forEach(test =>
-  AppRegistry.registerComponent(
-    test.displayName || test.name || '',
-    /* $FlowFixMe[incompatible-call] (>=0.54.0 site=react_native_fb,react_native_
-     * oss) This comment suppresses an error found when Flow v0.54 was deployed.
-     * To see the error delete this comment and run Flow. */
-    () => test,
-  ),
+TESTS.forEach(
+  /* $FlowFixMe[incompatible-call] (>=0.54.0 site=react_native_fb,react_native_
+   * oss) This comment suppresses an error found when Flow v0.54 was deployed.
+   * To see the error delete this comment and run Flow. */
+  test => AppRegistry.registerComponent(test.displayName, () => test),
 );
 
 // Modules required for integration tests
@@ -81,9 +78,7 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
                * deployed. To see the error, delete this comment and run Flow.
                */
               style={styles.row}>
-              <Text style={styles.testName}>
-                {test.displayName || test.name}
-              </Text>
+              <Text style={styles.testName}>{test.displayName}</Text>
             </TouchableOpacity>,
             <View style={styles.separator} />,
           ])}

@@ -233,7 +233,9 @@ void Accessibility_OnAutomationProviderRequested(
   // Popups
   // https://task.ms/32440118: Add ContentIsland.SiteBridge to avoid this workaround
   winrt::IContentSiteBridge m_siteBridge{nullptr};
-  winrt::DesktopPopupSiteBridge m_popupSiteBridge{nullptr};
+#ifdef USE_EXPERIMENTAL_WINUI3
+  winrt::PopupWindowSiteBridge m_popupSiteBridge{nullptr};
+#endif
 
   // SystemBackdrops for Popups
   winrt::ISystemBackdropControllerWithTargets m_backdropController{nullptr};

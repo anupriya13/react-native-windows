@@ -28,10 +28,6 @@ struct ReactContextStub : implements<ReactContextStub, IReactContext> {
     VerifyElseCrashSz(false, "Not implemented");
   }
 
-  CallInvoker CallInvoker() noexcept {
-    VerifyElseCrashSz(false, "Not implemented");
-  }
-
   IInspectable JSRuntime() noexcept {
     VerifyElseCrashSz(false, "Not implemented");
   }

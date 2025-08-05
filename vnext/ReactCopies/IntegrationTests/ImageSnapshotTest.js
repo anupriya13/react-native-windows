@@ -10,30 +10,33 @@
 
 'use strict';
 
-import * as React from 'react';
-import {useEffect} from 'react';
-import {Image, NativeModules} from 'react-native';
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-const {TestModule} = NativeModules;
-
-function ImageSnapshotTest(): React.Node {
-  useEffect(() => {
+class ImageSnapshotTest extends React.Component<{...}> {
+  componentDidMount(): void {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
     }
-  }, []);
+  }
 
-  const done = (success: boolean) => {
+  done: (success: boolean) => void = (success: boolean) => {
     TestModule.markTestPassed(success);
   };
 
-  return (
-    <Image
-      source={require('./blue_square.png')}
-      defaultSource={require('./red_square.png')}
-      onLoad={() => TestModule.verifySnapshot(done)}
-    />
-  );
+  render(): React.Node {
+    return (
+      <Image
+        source={require('./blue_square.png')}
+        defaultSource={require('./red_square.png')}
+        onLoad={() => TestModule.verifySnapshot(this.done)}
+      />
+    );
+  }
 }
 
-export default ImageSnapshotTest;
+ImageSnapshotTest.displayName = 'ImageSnapshotTest';
+
+module.exports = ImageSnapshotTest;

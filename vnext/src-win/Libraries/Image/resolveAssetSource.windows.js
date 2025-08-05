@@ -11,14 +11,12 @@
 // Utilities for resolving an asset into a `source` for e.g. `Image`
 
 import type {ResolvedAssetSource} from './AssetSourceResolver';
-import typeof AssetSourceResolverT from './AssetSourceResolver';
-const Platform = require('../Utilities/Platform');
 import type {ImageSource} from './ImageSource';
 
 import SourceCode from '../NativeModules/specs/NativeSourceCode';
 
-const AssetSourceResolver: AssetSourceResolverT =
-  require('./AssetSourceResolver').default;
+const AssetSourceResolver = require('./AssetSourceResolver');
+const Platform = require('../Utilities/Platform');
 const {pickScale} = require('./AssetUtils');
 const AssetRegistry = require('@react-native/assets-registry/registry');
 
@@ -147,4 +145,4 @@ function resolveAssetSource(source: ?ImageSource): ?ResolvedAssetSource {
 resolveAssetSource.pickScale = pickScale;
 resolveAssetSource.setCustomSourceTransformer = setCustomSourceTransformer;
 resolveAssetSource.addCustomSourceTransformer = addCustomSourceTransformer;
-export default resolveAssetSource;
+module.exports = resolveAssetSource;

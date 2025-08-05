@@ -8,14 +8,6 @@
 
 namespace facebook::react {
 
-struct PressEvent {
-  Tag target;
-  Point pagePoint;
-  Point offsetPoint;
-  double timestamp;
-  int identifier;
-};
-
 class HostPlatformViewEventEmitter : public BaseViewEventEmitter {
  public:
   using BaseViewEventEmitter::BaseViewEventEmitter;
@@ -34,10 +26,6 @@ class HostPlatformViewEventEmitter : public BaseViewEventEmitter {
 
   void onMouseEnter(PointerEvent const &pointerEvent) const;
   void onMouseLeave(PointerEvent const &pointerEvent) const;
-
-#pragma mark - Touch Events
-
-  virtual void onPressIn(PressEvent event) const;
 };
 
 } // namespace facebook::react
