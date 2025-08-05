@@ -40,7 +40,6 @@ extends:
             artifactName: 'ReactWindows-final-nuget'
             targetPath: '$(Pipeline.Workspace)/ReactWindows-final-nuget'
         steps:
-        - checkout: none
         - task: NuGetToolInstaller@1
           displayName: 'Use NuGet '
         - task: NuGetAuthenticate@1
@@ -51,7 +50,7 @@ extends:
           displayName: NuGet push (react-native)
           inputs:
             script: nuget.exe push *.nupkg -ApiKey AzureArtifacts -Source https://pkgs.dev.azure.com/ms/_packaging/react-native/nuget/v3/index.json -NonInteractive -Verbosity Detailed -SkipDuplicate -NoSymbols
-            workingDirectory: $(Pipeline.Workspace)/ReactWindows-final-nuget
+            workingDirectory: $(System.DefaultWorkingDirectory)/Publish/ReactWindows-final-nuget
     - stage: PushToPublicAdoStage
       displayName: ADO - react-native-public
       jobs:
@@ -66,7 +65,6 @@ extends:
             artifactName: 'ReactWindows-final-nuget'
             targetPath: '$(Pipeline.Workspace)/ReactWindows-final-nuget'
         steps:
-        - checkout: none
         - task: NuGetToolInstaller@1
           displayName: 'Use NuGet '
         - task: NuGetAuthenticate@1
@@ -77,7 +75,7 @@ extends:
           displayName: NuGet push (react-native-public)
           inputs:
             script: nuget.exe push *.nupkg -ApiKey AzureArtifacts -Source https://pkgs.dev.azure.com/ms/react-native/_packaging/react-native-public/nuget/v3/index.json -NonInteractive -Verbosity Detailed -SkipDuplicate -NoSymbols
-            workingDirectory: $(Pipeline.Workspace)/ReactWindows-final-nuget
+            workingDirectory: $(System.DefaultWorkingDirectory)/Publish/ReactWindows-final-nuget
     - stage: PushToNuGetStage
       displayName: nuget.org - Push nuget packages
       variables:
@@ -85,6 +83,7 @@ extends:
       jobs:
       - job: PushPackages
         displayName: Push packages
+        condition: and(succeeded(), endsWith(variables['Build.SourceBranchName'],'-stable'))
         timeoutInMinutes: 0
         templateContext:
           inputs:
@@ -93,20 +92,15 @@ extends:
             artifactName: 'ReactWindows-final-nuget'
             targetPath: '$(Pipeline.Workspace)/ReactWindows-final-nuget'
         steps:
-        - checkout: none
         - task: NuGetToolInstaller@1
           displayName: 'Use NuGet '
         - task: CmdLine@2
           displayName: NuGet SetApiKey (nuget.org)
           inputs:
             script: nuget.exe SetApiKey $(nugetorg-apiKey-push)
-            workingDirectory: $(Pipeline.Workspace)/ReactWindows-final-nuget
-        - task: PowerShell@2
+            workingDirectory: $(System.DefaultWorkingDirectory)/Publish/ReactWindows-final-nuget
+        - task: CmdLine@2
           displayName: NuGet push (nuget.org)
           inputs:
-            targetType: inline
-            errorActionPreference: silentlyContinue
-            script: |
-              if (Get-ChildItem -Path .\ -Filter '*0.0.0-canary*' -ErrorAction SilentlyContinue) { Write-Output "Canary builds found, exiting."; return 0; }
-              nuget.exe push .\Microsoft.ReactNative.*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -NoSymbol -NonInteractive -Verbosity Detailed
-            workingDirectory: $(Pipeline.Workspace)/ReactWindows-final-nuget
+            script: nuget.exe push .\Microsoft.ReactNative.*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -NoSymbol -NonInteractive -Verbosity Detailed
+            workingDirectory: $(System.DefaultWorkingDirectory)/Publish/ReactWindows-final-nuget

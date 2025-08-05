@@ -211,7 +211,7 @@ function isTextInput(textField: HostInstance): boolean {
   return inputs.has(textField);
 }
 
-const TextInputState = {
+module.exports = {
   currentlyFocusedInput,
   focusInput,
   blurInput,
@@ -225,5 +225,3 @@ const TextInputState = {
   unregisterInput,
   isTextInput,
 };
-
-export default TextInputState;

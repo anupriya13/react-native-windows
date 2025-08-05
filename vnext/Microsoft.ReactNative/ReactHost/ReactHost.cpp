@@ -6,8 +6,6 @@
 #include <ReactPropertyBag.h>
 #include <winrt/Windows.Foundation.h>
 
-#include <CppRuntimeOptions.h>
-
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 
@@ -284,12 +282,8 @@ bool ReactOptions::EnableDefaultCrashHandler() const noexcept {
 
 class ReactNativeWindowsFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
-  bool enableBridgelessArchitecture() override {
-#ifdef USE_FABRIC
-    return true;
-#else
-    return false;
-#endif
+  bool disableEventLoopOnBridgeless() override {
+    return true; // Disable event loop until we are on a JSI version that supports microtasks
   }
 
   bool enableCppPropsIteratorSetter() override {

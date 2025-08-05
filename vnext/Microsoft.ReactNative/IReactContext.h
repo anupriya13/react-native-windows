@@ -43,7 +43,6 @@ struct ReactContext : winrt::implements<ReactContext, IReactContext> {
   IReactNotificationService Notifications() noexcept;
   IReactDispatcher UIDispatcher() noexcept;
   IReactDispatcher JSDispatcher() noexcept;
-  winrt::Microsoft::ReactNative::CallInvoker CallInvoker() noexcept;
   IInspectable JSRuntime() noexcept;
   LoadingState LoadingState() noexcept;
 

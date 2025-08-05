@@ -38,8 +38,6 @@ class ChakraRuntime : public facebook::jsi::Runtime, public ChakraApi, ChakraApi
 
   bool drainMicrotasks(int maxMicrotasksHint = -1) override;
 
-  void queueMicrotask(const facebook::jsi::Function &callback) override;
-
   facebook::jsi::Object global() override;
 
   std::string description() override;

@@ -56,7 +56,9 @@ void NativeAnimatedModule::getValue(double tag, std::function<void(double)> cons
        callback = std::move(saveValueCallback)]() {
         if (auto pThis = wkThis.lock()) {
           pThis->m_nodesManager->GetValue(
-              tag, [context = pThis->m_context, callback = std::move(callback)](double value) { callback(value); });
+              tag, [context = pThis->m_context, callback = std::move(callback)](double value) {
+                context.JSDispatcher().Post([callback = std::move(callback), value]() { callback(value); });
+              });
         }
       });
 }
@@ -129,9 +131,11 @@ void NativeAnimatedModule::startAnimatingNode(
               nodeTag,
               animationConfig.AsObject(),
               [context = pThis->m_context, endCallback = std::move(endCallback)](bool finished) {
-                ReactNativeSpecs::AnimatedModuleSpec_EndResult result;
-                result.finished = finished;
-                endCallback(std::move(result));
+                context.JSDispatcher().Post([finished, endCallback = std::move(endCallback)]() {
+                  ReactNativeSpecs::AnimatedModuleSpec_EndResult result;
+                  result.finished = finished;
+                  endCallback(std::move(result));
+                });
               },
               pThis->m_nodesManager);
         }

@@ -95,12 +95,9 @@ function PerformanceObserverUserTimingExample(): React.Node {
 
   useEffect(() => {
     const observer = new PerformanceObserver(list => {
-      const newEntries = list
-        .getEntries()
-        .filter(entry => entry.name.startsWith('rntester-'));
-      if (newEntries.length > 0) {
-        setEntries(newEntries);
-      }
+      setEntries(
+        list.getEntries().filter(entry => entry.name.startsWith('rntester-')),
+      );
     });
 
     observer.observe({entryTypes: ['mark', 'measure']});

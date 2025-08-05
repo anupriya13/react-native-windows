@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,22 +61,22 @@ using to_ascii_alphabet_upper = to_ascii_alphabet<true>;
 //  In base 10, u64 requires at most 20 bytes, u32 at most 10, u16 at most 5,
 //  and u8 at most 3.
 /*
-template <uint64_t Base, typename Int>
-inline  constexpr size_t to_ascii_size_max =
-  detail::to_ascii_powers<Base, Int>::size;
+template <uint64_t Base, typename I>
+FOLLY_INLINE_VARIABLE constexpr size_t to_ascii_size_max =
+  detail::to_ascii_powers<Base, I>::size;
 */
 //  to_ascii_size_max_decimal
 //
 //  An alias to to_ascii_size_max<10>.
-template <typename Int>
-inline  constexpr size_t to_ascii_size_max_decimal;
+template <typename I>
+FOLLY_INLINE_VARIABLE constexpr size_t to_ascii_size_max_decimal;
 
 template <>
-inline  constexpr size_t to_ascii_size_max_decimal<uint16_t> = 5;
+FOLLY_INLINE_VARIABLE constexpr size_t to_ascii_size_max_decimal<uint16_t> = 5;
 template <>
-inline  constexpr size_t to_ascii_size_max_decimal<uint32_t> = 10;
+FOLLY_INLINE_VARIABLE constexpr size_t to_ascii_size_max_decimal<uint32_t> = 10;
 template <>
-inline  constexpr size_t to_ascii_size_max_decimal<uint64_t> = 20;
+FOLLY_INLINE_VARIABLE constexpr size_t to_ascii_size_max_decimal<uint64_t> = 20;
 
 
 namespace detail {
@@ -170,7 +170,7 @@ size_t to_ascii_upper(char (&out)[N], uint64_t v) {
 //
 //  An alias to to_ascii<10, false>.
 //
-//  async-signal-safe
+//  async-signals-afe
 inline size_t to_ascii_decimal(char* outb, char const* oute, uint64_t v) {
   return to_ascii_lower<10>(outb, oute, v);
 }

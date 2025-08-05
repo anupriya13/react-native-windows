@@ -77,11 +77,6 @@ exports[`dependencyConfig - SimpleCSharpLib (Ignore react-native.config.js) 1`] 
       "projectName": "SimpleCSharpLib",
     },
   ],
-  "rnwConfig": {
-    "init-windows": {
-      "template": "old/uwp-cs-lib",
-    },
-  },
   "solutionFile": "SimpleCSharpLib.sln",
   "sourceDir": "windows",
 }
@@ -112,11 +107,6 @@ exports[`dependencyConfig - SimpleCSharpLib (Use react-native.config.js) 1`] = `
       "projectName": "SimpleCSharpLib",
     },
   ],
-  "rnwConfig": {
-    "init-windows": {
-      "template": "old/uwp-cs-lib",
-    },
-  },
   "solutionFile": "SimpleCSharpLib.sln",
   "sourceDir": "windows",
 }
@@ -175,11 +165,6 @@ exports[`dependencyConfig - SimpleCppLib (Ignore react-native.config.js) 1`] = `
       "projectName": "SimpleCppLib",
     },
   ],
-  "rnwConfig": {
-    "init-windows": {
-      "template": "old/uwp-cpp-lib",
-    },
-  },
   "solutionFile": "SimpleCppLib.sln",
   "sourceDir": "windows",
 }
@@ -210,11 +195,6 @@ exports[`dependencyConfig - SimpleCppLib (Use react-native.config.js) 1`] = `
       "projectName": "SimpleCppLib",
     },
   ],
-  "rnwConfig": {
-    "init-windows": {
-      "template": "old/uwp-cpp-lib",
-    },
-  },
   "solutionFile": "SimpleCppLib.sln",
   "sourceDir": "windows",
 }

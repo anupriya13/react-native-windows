@@ -10,9 +10,8 @@
 
 'use strict';
 
-import RNTexterText from '../../components/RNTesterText';
-import React from 'react';
-import {
+const React = require('react');
+const {
   Alert,
   Animated,
   Button,
@@ -26,7 +25,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   View,
-} from 'react-native';
+} = require('react-native');
 
 type RTLToggleState = {isRTL: boolean, ...};
 
@@ -51,7 +50,7 @@ function ListItem(props: {imageSource: number}) {
       </View>
       <View style={styles.column2}>
         <View style={styles.textBox}>
-          <RNTexterText>Text Text Text</RNTexterText>
+          <Text>Text Text Text</Text>
         </View>
       </View>
       <View style={styles.column3}>
@@ -68,20 +67,20 @@ const TextAlignmentExample = withRTLState(({isRTL, setRTL, ...props}) => {
     <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
       <View style={directionStyle(isRTL)}>
-        <RNTexterText style={props.style}>
+        <Text style={props.style}>
           Left-to-Right language without text alignment.
-        </RNTexterText>
-        <RNTexterText style={props.style}>
+        </Text>
+        <Text style={props.style}>
           {'\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 ' +
             '\u0625\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631 ' +
             '\u0627\u0644\u0644\u063A\u0629 \u062F\u0648\u0646 ' +
             '\u0645\u062D\u0627\u0630\u0627\u0629 \u0627\u0644\u0646\u0635'}
-        </RNTexterText>
-        <RNTexterText style={props.style}>
+        </Text>
+        <Text style={props.style}>
           {'\u05DE\u05D9\u05DE\u05D9\u05DF \u05DC\u05E9\u05DE\u05D0\u05DC ' +
             '\u05D4\u05E9\u05E4\u05D4 \u05D1\u05DC\u05D9 ' +
             '\u05D9\u05D9\u05E9\u05D5\u05E8 \u05D8\u05E7\u05E1\u05D8'}
-        </RNTexterText>
+        </Text>
       </View>
     </View>
   );
@@ -92,7 +91,7 @@ const TextInputExample = withRTLState(({isRTL, setRTL, ...props}) => {
     <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
       <View style={directionStyle(isRTL)}>
-        <RNTexterText style={props.style}>LRT or RTL TextInput.</RNTexterText>
+        <Text style={props.style}>LRT or RTL TextInput.</Text>
         <TextInput style={props.style} />
       </View>
     </View>
@@ -109,18 +108,18 @@ const IconsExample = withRTLState(({isRTL, setRTL}) => {
             source={require('../../assets/like.png')}
             style={styles.image}
           />
-          <RNTexterText style={styles.fontSizeExtraSmall}>
+          <Text style={styles.fontSizeExtraSmall}>
             Without directional meaning
-          </RNTexterText>
+          </Text>
         </View>
         <View style={styles.rightAlignStyle}>
           <Image
             source={require('../../assets/poke.png')}
             style={[styles.image, styles.withRTLStyle]}
           />
-          <RNTexterText style={styles.fontSizeExtraSmall}>
+          <Text style={styles.fontSizeExtraSmall}>
             With directional meaning
-          </RNTexterText>
+          </Text>
         </View>
       </View>
     </View>
@@ -143,9 +142,9 @@ function AnimationBlock(props: {
   );
 }
 
-type RTLSwitcherComponentState = {
+type RTLSwitcherComponentState = {|
   isRTL: boolean,
-};
+|};
 
 function withRTLState(
   Component: ({
@@ -216,7 +215,7 @@ class RTLToggleExample extends React.Component<any, RTLToggleState> {
           </Text>
         </View>
         <View style={styles.flexDirectionRow}>
-          <RNTexterText style={styles.switchRowTextView}>forceRTL</RNTexterText>
+          <Text style={styles.switchRowTextView}>forceRTL</Text>
           <View style={styles.switchRowSwitchView}>
             <Switch
               onValueChange={this._onDirectionChange}
@@ -316,12 +315,12 @@ const PaddingExample = withRTLState(({isRTL, setRTL}) => {
 
   return (
     <View>
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>paddingStart: 50,</RNTexterText>
-      <RNTexterText>paddingEnd: 10</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>paddingStart: 50,</Text>
+      <Text>paddingEnd: 10</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
-      <RNTexterText>The {color} is padding.</RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
+      <Text>The {color} is padding.</Text>
       <View
         style={{
           backgroundColor: color,
@@ -350,12 +349,12 @@ const PaddingExample = withRTLState(({isRTL, setRTL}) => {
 const MarginExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>marginStart: 50,</RNTexterText>
-      <RNTexterText>marginEnd: 10</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>marginStart: 50,</Text>
+      <Text>marginEnd: 10</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
-      <RNTexterText>The green is margin.</RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
+      <Text>The green is margin.</Text>
       <View
         style={{
           backgroundColor: 'green',
@@ -384,11 +383,11 @@ const MarginExample = withRTLState(({isRTL, setRTL}) => {
 const PositionExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>start: 50</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>start: 50</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
-      <RNTexterText>The orange is position.</RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
+      <Text>The orange is position.</Text>
       <View
         style={{
           backgroundColor: 'orange',
@@ -406,11 +405,11 @@ const PositionExample = withRTLState(({isRTL, setRTL}) => {
         </View>
       </View>
       <Text />
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>end: 50</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>end: 50</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
-      <RNTexterText>The orange is position.</RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
+      <Text>The orange is position.</Text>
       <View
         style={{
           backgroundColor: 'orange',
@@ -434,11 +433,11 @@ const PositionExample = withRTLState(({isRTL, setRTL}) => {
 const BorderWidthExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>borderStartWidth: 10,</RNTexterText>
-      <RNTexterText>borderEndWidth: 50</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>borderStartWidth: 10,</Text>
+      <Text>borderEndWidth: 50</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
       <View style={directionStyle(isRTL)}>
         <View
           style={{
@@ -457,11 +456,11 @@ const BorderWidthExample = withRTLState(({isRTL, setRTL}) => {
 const BorderColorExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>borderStartColor: 'red',</RNTexterText>
-      <RNTexterText>borderEndColor: 'green',</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>borderStartColor: 'red',</Text>
+      <Text>borderEndColor: 'green',</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
       <View style={directionStyle(isRTL)}>
         <View
           style={{
@@ -483,13 +482,13 @@ const BorderColorExample = withRTLState(({isRTL, setRTL}) => {
 const BorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>borderTopStartRadius: 10,</RNTexterText>
-      <RNTexterText>borderTopEndRadius: 20,</RNTexterText>
-      <RNTexterText>borderBottomStartRadius: 30,</RNTexterText>
-      <RNTexterText>borderBottomEndRadius: 40</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>borderTopStartRadius: 10,</Text>
+      <Text>borderTopEndRadius: 20,</Text>
+      <Text>borderBottomStartRadius: 30,</Text>
+      <Text>borderBottomEndRadius: 40</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
       <View style={directionStyle(isRTL)}>
         <View
           style={{
@@ -512,13 +511,13 @@ const BorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
 const LogicalBorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>borderStartStartRadius: 10,</RNTexterText>
-      <RNTexterText>borderStartEndRadius: 20,</RNTexterText>
-      <RNTexterText>borderEndStartRadius: 30,</RNTexterText>
-      <RNTexterText>borderEndEndRadius: 40</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>borderStartStartRadius: 10,</Text>
+      <Text>borderStartEndRadius: 20,</Text>
+      <Text>borderEndStartRadius: 30,</Text>
+      <Text>borderEndEndRadius: 40</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
       <View style={directionStyle(isRTL)}>
         <View
           style={{
@@ -541,17 +540,17 @@ const LogicalBorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
 const BorderExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
-      <RNTexterText style={styles.bold}>Styles</RNTexterText>
-      <RNTexterText>borderStartColor: 'red',</RNTexterText>
-      <RNTexterText>borderEndColor: 'green',</RNTexterText>
-      <RNTexterText>borderStartWidth: 10,</RNTexterText>
-      <RNTexterText>borderEndWidth: 50,</RNTexterText>
-      <RNTexterText>borderTopStartRadius: 10,</RNTexterText>
-      <RNTexterText>borderTopEndRadius: 20,</RNTexterText>
-      <RNTexterText>borderBottomStartRadius: 30,</RNTexterText>
-      <RNTexterText>borderBottomEndRadius: 40</RNTexterText>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>borderStartColor: 'red',</Text>
+      <Text>borderEndColor: 'green',</Text>
+      <Text>borderStartWidth: 10,</Text>
+      <Text>borderEndWidth: 50,</Text>
+      <Text>borderTopStartRadius: 10,</Text>
+      <Text>borderTopEndRadius: 20,</Text>
+      <Text>borderBottomStartRadius: 30,</Text>
+      <Text>borderBottomEndRadius: 40</Text>
       <Text />
-      <RNTexterText style={styles.bold}>Demo: </RNTexterText>
+      <Text style={styles.bold}>Demo: </Text>
       <View style={directionStyle(isRTL)}>
         <View
           style={{

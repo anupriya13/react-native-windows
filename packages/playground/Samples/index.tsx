@@ -141,7 +141,6 @@ export default class Bootstrap extends React.Component<
     switchIsOn: boolean;
     highlightPressed: boolean;
     mouseEntered: boolean;
-    isAnimating: boolean;
   }
 > {
   constructor(props: {}) {
@@ -152,17 +151,10 @@ export default class Bootstrap extends React.Component<
       mouseEntered: false,
       switchIsOn: true,
       highlightPressed: false,
-      isAnimating: false,
     };
   }
 
   inputRef: React.RefObject<TextInput | null>;
-
-  toggleAnimation = () => {
-    this.setState(prevState => ({
-      isAnimating: !prevState.isAnimating,
-    }));
-  };
 
   render() {
     return (
@@ -207,26 +199,7 @@ export default class Bootstrap extends React.Component<
             </View>
           </ScrollView>
           <TicTacButton />
-          <ActivityIndicator
-            size="large"
-            color="green"
-            animating={this.state.isAnimating}
-            hidesWhenStopped={false}
-          />
-          <ActivityIndicator
-            size="large"
-            color="green"
-            animating={this.state.isAnimating}
-            hidesWhenStopped={true}
-          />
-          <View>
-            <Button
-              title={
-                this.state.isAnimating ? 'Stop Animation' : 'Start Animation'
-              }
-              onPress={this.toggleAnimation}
-            />
-          </View>
+          <ActivityIndicator size="large" color="green" />
           <Text style={{marginTop: 15}}>Big Border & Clipping Tests:</Text>
           <View style={{flexDirection: 'row'}}>
             <View style={{flexDirection: 'column', alignItems: 'center'}}>

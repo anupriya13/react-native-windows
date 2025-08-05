@@ -21,13 +21,14 @@ struct DevSettingsSpec : winrt::Microsoft::ReactNative::TurboModuleSpec {
       Method<void(std::string) noexcept>{1, L"reloadWithReason"},
       Method<void() noexcept>{2, L"onFastRefresh"},
       Method<void(bool) noexcept>{3, L"setHotLoadingEnabled"},
-      Method<void(bool) noexcept>{4, L"setProfilingEnabled"},
-      Method<void() noexcept>{5, L"toggleElementInspector"},
-      Method<void(std::string) noexcept>{6, L"addMenuItem"},
-      Method<void() noexcept>{7, L"openDebugger"},
-      Method<void(std::string) noexcept>{8, L"addListener"},
-      Method<void(double) noexcept>{9, L"removeListeners"},
-      Method<void(bool) noexcept>{10, L"setIsShakeToShowDevMenuEnabled"},
+      Method<void(bool) noexcept>{4, L"setIsDebuggingRemotely"},
+      Method<void(bool) noexcept>{5, L"setProfilingEnabled"},
+      Method<void() noexcept>{6, L"toggleElementInspector"},
+      Method<void(std::string) noexcept>{7, L"addMenuItem"},
+      Method<void() noexcept>{8, L"openDebugger"},
+      Method<void(std::string) noexcept>{9, L"addListener"},
+      Method<void(double) noexcept>{10, L"removeListeners"},
+      Method<void(bool) noexcept>{11, L"setIsShakeToShowDevMenuEnabled"},
   };
 
   template <class TModule>
@@ -56,36 +57,41 @@ struct DevSettingsSpec : winrt::Microsoft::ReactNative::TurboModuleSpec {
           "    REACT_METHOD(setHotLoadingEnabled) static void setHotLoadingEnabled(bool isHotLoadingEnabled) noexcept { /* implementation */ }\n");
     REACT_SHOW_METHOD_SPEC_ERRORS(
           4,
+          "setIsDebuggingRemotely",
+          "    REACT_METHOD(setIsDebuggingRemotely) void setIsDebuggingRemotely(bool isDebuggingRemotelyEnabled) noexcept { /* implementation */ }\n"
+          "    REACT_METHOD(setIsDebuggingRemotely) static void setIsDebuggingRemotely(bool isDebuggingRemotelyEnabled) noexcept { /* implementation */ }\n");
+    REACT_SHOW_METHOD_SPEC_ERRORS(
+          5,
           "setProfilingEnabled",
           "    REACT_METHOD(setProfilingEnabled) void setProfilingEnabled(bool isProfilingEnabled) noexcept { /* implementation */ }\n"
           "    REACT_METHOD(setProfilingEnabled) static void setProfilingEnabled(bool isProfilingEnabled) noexcept { /* implementation */ }\n");
     REACT_SHOW_METHOD_SPEC_ERRORS(
-          5,
+          6,
           "toggleElementInspector",
           "    REACT_METHOD(toggleElementInspector) void toggleElementInspector() noexcept { /* implementation */ }\n"
           "    REACT_METHOD(toggleElementInspector) static void toggleElementInspector() noexcept { /* implementation */ }\n");
     REACT_SHOW_METHOD_SPEC_ERRORS(
-          6,
+          7,
           "addMenuItem",
           "    REACT_METHOD(addMenuItem) void addMenuItem(std::string title) noexcept { /* implementation */ }\n"
           "    REACT_METHOD(addMenuItem) static void addMenuItem(std::string title) noexcept { /* implementation */ }\n");
     REACT_SHOW_METHOD_SPEC_ERRORS(
-          7,
+          8,
           "openDebugger",
           "    REACT_METHOD(openDebugger) void openDebugger() noexcept { /* implementation */ }\n"
           "    REACT_METHOD(openDebugger) static void openDebugger() noexcept { /* implementation */ }\n");
     REACT_SHOW_METHOD_SPEC_ERRORS(
-          8,
+          9,
           "addListener",
           "    REACT_METHOD(addListener) void addListener(std::string eventName) noexcept { /* implementation */ }\n"
           "    REACT_METHOD(addListener) static void addListener(std::string eventName) noexcept { /* implementation */ }\n");
     REACT_SHOW_METHOD_SPEC_ERRORS(
-          9,
+          10,
           "removeListeners",
           "    REACT_METHOD(removeListeners) void removeListeners(double count) noexcept { /* implementation */ }\n"
           "    REACT_METHOD(removeListeners) static void removeListeners(double count) noexcept { /* implementation */ }\n");
     REACT_SHOW_METHOD_SPEC_ERRORS(
-          10,
+          11,
           "setIsShakeToShowDevMenuEnabled",
           "    REACT_METHOD(setIsShakeToShowDevMenuEnabled) void setIsShakeToShowDevMenuEnabled(bool enabled) noexcept { /* implementation */ }\n"
           "    REACT_METHOD(setIsShakeToShowDevMenuEnabled) static void setIsShakeToShowDevMenuEnabled(bool enabled) noexcept { /* implementation */ }\n");

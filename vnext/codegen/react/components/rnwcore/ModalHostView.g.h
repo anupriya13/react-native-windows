@@ -34,8 +34,7 @@ struct ModalHostViewProps : winrt::implements<ModalHostViewProps, winrt::Microso
        visible = cloneFromProps->visible;
        animated = cloneFromProps->animated;
        supportedOrientations = cloneFromProps->supportedOrientations;
-       identifier = cloneFromProps->identifier;
-       title = cloneFromProps->title;  
+       identifier = cloneFromProps->identifier;  
      }
   }
 
@@ -72,9 +71,6 @@ struct ModalHostViewProps : winrt::implements<ModalHostViewProps, winrt::Microso
 
   REACT_FIELD(identifier)
   std::optional<int32_t> identifier{};
-
-  REACT_FIELD(title)
-  std::optional<std::string> title;
 
   const winrt::Microsoft::ReactNative::ViewProps ViewProps;
 };

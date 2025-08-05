@@ -650,19 +650,13 @@ TEST_CLASS (TurboModuleTests) {
     TestEventService::Initialize();
     TestNotificationService::Initialize();
 
-    CallInvoker callInvoker{nullptr};
-
-    auto reactNativeHost = TestReactNativeHostHolder(L"TurboModuleTests", [&](ReactNativeHost const &host) noexcept {
+    auto reactNativeHost = TestReactNativeHostHolder(L"TurboModuleTests", [](ReactNativeHost const &host) noexcept {
       host.PackageProviders().Append(winrt::make<CppTurboModulePackageProvider>());
       ReactPropertyBag(host.InstanceSettings().Properties())
           .Set(CppTurboModule::TestName, L"JSDispatcherAfterInstanceUnload");
       host.InstanceSettings().InstanceDestroyed(
           [&](IInspectable const & /*sender*/, InstanceDestroyedEventArgs const & /*args*/) {
             TestNotificationService::Set("Instance destroyed event");
-          });
-      host.InstanceSettings().InstanceCreated(
-          [&](IInspectable const & /*sender*/, InstanceCreatedEventArgs const &args) {
-            callInvoker = args.Context().CallInvoker();
           });
     });
 
@@ -673,17 +667,19 @@ TEST_CLASS (TurboModuleTests) {
     reactNativeHost.Host().UnloadInstance();
     TestNotificationService::Wait("Instance destroyed event");
 
+    // JSDispatcher must not process any callbacks
+    auto jsDispatcher = reactNativeHost.Host()
+                            .InstanceSettings()
+                            .Properties()
+                            .Get(ReactDispatcherHelper::JSDispatcherProperty())
+                            .as<IReactDispatcher>();
     struct CallbackData {
       ~CallbackData() {
         TestNotificationService::Set("CallbackData destroyed");
       }
     };
     bool callbackIsCalled{false};
-
-    // callInvoker must not process any callbacks
-    callInvoker.InvokeAsync(
-        [&callbackIsCalled, data = std::make_shared<CallbackData>()](
-            const winrt::Windows::Foundation::IInspectable & /*runtimeHandle*/) { callbackIsCalled = true; });
+    jsDispatcher.Post([&callbackIsCalled, data = std::make_shared<CallbackData>()] { callbackIsCalled = true; });
     TestNotificationService::Wait("CallbackData destroyed");
     TestCheck(!callbackIsCalled);
   }

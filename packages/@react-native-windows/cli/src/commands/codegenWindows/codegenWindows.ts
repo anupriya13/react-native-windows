@@ -143,10 +143,7 @@ export class CodeGenWindows {
       'modulesWindows',
     ];
 
-    const jsRootPathRelative = path
-      .relative(process.cwd(), jsRootDir)
-      .split(path.sep)
-      .join('/');
+    const jsRootPathRelative = path.relative(process.cwd(), jsRootDir);
     const options: RnwCodeGenOptions = {
       files: [
         `${jsRootPathRelative}${

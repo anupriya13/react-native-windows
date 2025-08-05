@@ -10,77 +10,69 @@
 
 'use strict';
 
-import * as React from 'react';
-import {useEffect, useRef} from 'react';
-import {NativeModules, View} from 'react-native';
+const React = require('react');
+const ReactNative = require('react-native');
+const {View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-const {TestModule} = NativeModules;
+class PromiseTest extends React.Component<{...}> {
+  shouldResolve: boolean = false;
+  shouldReject: boolean = false;
+  shouldSucceedAsync: boolean = false;
+  shouldThrowAsync: boolean = false;
 
-function PromiseTest(): React.Node {
-  const shouldResolve = useRef(false);
-  const shouldReject = useRef(false);
-  const shouldSucceedAsync = useRef(false);
-  const shouldThrowAsync = useRef(false);
+  componentDidMount() {
+    // $FlowFixMe[unused-promise]
+    Promise.all([
+      this.testShouldResolve(),
+      this.testShouldReject(),
+      this.testShouldSucceedAsync(),
+      this.testShouldThrowAsync(),
+    ]).then(() =>
+      TestModule.markTestPassed(
+        this.shouldResolve &&
+          this.shouldReject &&
+          this.shouldSucceedAsync &&
+          this.shouldThrowAsync,
+      ),
+    );
+  }
 
-  const testShouldResolve = () => {
+  testShouldResolve: () => any = () => {
     return TestModule.shouldResolve()
-      .then(() => {
-        shouldResolve.current = true;
-      })
-      .catch(() => {
-        shouldResolve.current = false;
-      });
+      .then(() => (this.shouldResolve = true))
+      .catch(() => (this.shouldResolve = false));
   };
 
-  const testShouldReject = () => {
+  testShouldReject: () => any = () => {
     return TestModule.shouldReject()
-      .then(() => {
-        shouldReject.current = false;
-      })
-      .catch(() => {
-        shouldReject.current = true;
-      });
+      .then(() => (this.shouldReject = false))
+      .catch(() => (this.shouldReject = true));
   };
 
-  const testShouldSucceedAsync = async () => {
+  testShouldSucceedAsync: () => Promise<any> = async (): Promise<any> => {
     try {
       await TestModule.shouldResolve();
-      shouldSucceedAsync.current = true;
+      this.shouldSucceedAsync = true;
     } catch (e) {
-      shouldSucceedAsync.current = false;
+      this.shouldSucceedAsync = false;
     }
   };
 
-  const testShouldThrowAsync = async () => {
+  testShouldThrowAsync: () => Promise<any> = async (): Promise<any> => {
     try {
       await TestModule.shouldReject();
-      shouldThrowAsync.current = false;
+      this.shouldThrowAsync = false;
     } catch (e) {
-      shouldThrowAsync.current = true;
+      this.shouldThrowAsync = true;
     }
   };
 
-  useEffect(() => {
-    async function runTests() {
-      await Promise.all([
-        testShouldResolve(),
-        testShouldReject(),
-        testShouldSucceedAsync(),
-        testShouldThrowAsync(),
-      ]);
-
-      TestModule.markTestPassed(
-        shouldResolve.current &&
-          shouldReject.current &&
-          shouldSucceedAsync.current &&
-          shouldThrowAsync.current,
-      );
-    }
-
-    runTests().catch(console.error);
-  }, []);
-
-  return <View />;
+  render(): React.Node {
+    return <View />;
+  }
 }
 
-export default PromiseTest;
+PromiseTest.displayName = 'PromiseTest';
+
+module.exports = PromiseTest;

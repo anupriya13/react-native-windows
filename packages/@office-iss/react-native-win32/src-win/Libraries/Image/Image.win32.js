@@ -284,4 +284,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Image;
+module.exports = Image;

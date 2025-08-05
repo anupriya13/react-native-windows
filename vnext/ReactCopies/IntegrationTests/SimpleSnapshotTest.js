@@ -10,29 +10,32 @@
 
 'use strict';
 
-import * as React from 'react';
-import {useEffect} from 'react';
-import {NativeModules, StyleSheet, View} from 'react-native';
+const React = require('react');
+const ReactNative = require('react-native');
 
-const {TestModule} = NativeModules;
+const {StyleSheet, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-function SimpleSnapshotTest(): React.Node {
-  const done = (success: boolean) => {
-    TestModule.markTestPassed(success);
-  };
-  useEffect(() => {
+class SimpleSnapshotTest extends React.Component<{...}> {
+  componentDidMount(): void {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
     }
-    requestAnimationFrame(() => TestModule.verifySnapshot(done));
-  }, []);
+    requestAnimationFrame(() => TestModule.verifySnapshot(this.done));
+  }
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.box1} />
-      <View style={styles.box2} />
-    </View>
-  );
+  done: (success: boolean) => void = (success: boolean) => {
+    TestModule.markTestPassed(success);
+  };
+
+  render(): React.Node {
+    return (
+      <View style={styles.container}>
+        <View style={styles.box1} />
+        <View style={styles.box2} />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -54,4 +57,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SimpleSnapshotTest;
+SimpleSnapshotTest.displayName = 'SimpleSnapshotTest';
+
+module.exports = SimpleSnapshotTest;

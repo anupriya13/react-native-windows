@@ -62,7 +62,6 @@ export default async function upgradeDependencies(
     newReactNativeVersion,
   );
   const repoConfigDiff = await upgradeRepoConfig(newReactNativeVersion);
-
   const localPackages = (await enumerateRepoPackages()).map(pkg => ({
     ...extractPackageDeps(pkg.json),
     outOfTreePlatform: OUT_OF_TREE_PLATFORMS.includes(pkg.json.name),
@@ -272,7 +271,6 @@ export function calcPackageDependencies(
       reactNativePackageDiff,
       templateDiff,
       'devDependencies',
-      newReactNativeVersion,
     );
     if (newPackage.packageName.startsWith('@rnw-scripts')) {
       // For internal scripts - bump dependencies to align with core as much as possible
@@ -282,7 +280,6 @@ export function calcPackageDependencies(
         reactNativePackageDiff,
         templateDiff,
         'dependencies',
-        newReactNativeVersion,
       );
     }
 
@@ -358,7 +355,6 @@ function syncDependencies(
   reactNativePackageDiff: PackageDiff,
   templateDiff: PackageDiff,
   dependencyType: 'devDependencies' | 'dependencies',
-  newReactNativeVersion: string,
 ) {
   // We don't need all of the dev dependencies from the RN repo in our
   // packages. We instead just make sure to update our own dev dependencies if
@@ -372,18 +368,6 @@ function syncDependencies(
     ...templateDiff.newPackage.dependencies,
     ...templateDiff.newPackage.devDependencies,
   };
-
-  // below packages rely on internal builds upstream in their package.json but still publish a new matching nightly version. Update our package.json to the matching nightly version.
-  if (pkg[dependencyType]?.['@react-native/metro-config']) {
-    pkg[dependencyType]!['@react-native/metro-config'] = newReactNativeVersion;
-  }
-  if (pkg[dependencyType]?.['@react-native/metro-babel-transformer']) {
-    pkg[dependencyType]!['@react-native/metro-babel-transformer'] =
-      newReactNativeVersion;
-  }
-  if (pkg[dependencyType]?.['@react-native/babel-preset']) {
-    pkg[dependencyType]!['@react-native/babel-preset'] = newReactNativeVersion;
-  }
 
   for (const [dependency, version] of devDependencies) {
     if (pkg.outOfTreePlatform && newRNDevDevDeps.hasOwnProperty(dependency)) {
@@ -462,18 +446,6 @@ function ensureValidReactNativePeerDep(
     pkg.peerDependencies['react-native'],
     newReactNativeVersion,
   );
-
-  // below packages rely on internal builds upstream in their package.json but still publish a new matching nightly version. Update our package.json to the matching nightly version.
-  if (pkg.dependencies?.['@react-native/metro-config']) {
-    pkg.dependencies['@react-native/metro-config'] = newReactNativeVersion;
-  }
-  if (pkg.dependencies?.['@react-native/metro-babel-transformer']) {
-    pkg.dependencies['@react-native/metro-babel-transformer'] =
-      newReactNativeVersion;
-  }
-  if (pkg.dependencies?.['@react-native/babel-preset']) {
-    pkg.dependencies['@react-native/babel-preset'] = newReactNativeVersion;
-  }
 }
 
 /**

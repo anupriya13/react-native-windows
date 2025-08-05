@@ -12,25 +12,27 @@
 
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
-import React from 'react';
-import {Pressable, StyleSheet, Text} from 'react-native';
+const React = require('react');
+const {Pressable, StyleSheet, Text} = require('react-native');
 
-type Props = $ReadOnly<{
+type Props = $ReadOnly<{|
   testID?: string,
   textTestID?: string,
   children?: React.Node,
   onPress?: ?(event: PressEvent) => mixed,
-}>;
+|}>;
 
-function RNTesterButton(props: Props): React.Node {
-  return (
-    <Pressable
-      testID={props.testID}
-      onPress={props.onPress}
-      style={({pressed}) => [styles.button, pressed && styles.pressed]}>
-      <Text testID={props.textTestID}>{props.children}</Text>
-    </Pressable>
-  );
+class RNTesterButton extends React.Component<Props> {
+  render(): React.Node {
+    return (
+      <Pressable
+        testID={this.props.testID}
+        onPress={this.props.onPress}
+        style={({pressed}) => [styles.button, pressed && styles.pressed]}>
+        <Text testID={this.props.textTestID}>{this.props.children}</Text>
+      </Pressable>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -49,4 +51,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RNTesterButton;
+module.exports = RNTesterButton;

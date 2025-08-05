@@ -12,15 +12,15 @@
 
 import type {ExtendedError} from 'react-native/Libraries/Core/ExtendedError';
 
-import * as React from 'react';
-import {useEffect} from 'react';
-import {NativeModules, View} from 'react-native';
-import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
+const React = require('react');
+const ReactNative = require('react-native');
+const parseErrorStack = require('react-native/Libraries/Core/Devtools/parseErrorStack');
+const {View} = ReactNative;
 
-const {TestModule} = NativeModules;
+const {TestModule} = ReactNative.NativeModules;
 
-function GlobalEvalWithSourceUrlTest(): React.Node {
-  useEffect(() => {
+class GlobalEvalWithSourceUrlTest extends React.Component<{...}> {
+  componentDidMount(): void {
     if (typeof global.globalEvalWithSourceUrl !== 'function') {
       throw new Error(
         'Expected to find globalEvalWithSourceUrl function on global object but found ' +
@@ -75,9 +75,13 @@ function GlobalEvalWithSourceUrlTest(): React.Node {
       );
     }
     TestModule.markTestCompleted();
-  }, []);
+  }
 
-  return <View />;
+  render(): React.Node {
+    return <View />;
+  }
 }
 
-export default GlobalEvalWithSourceUrlTest;
+GlobalEvalWithSourceUrlTest.displayName = 'GlobalEvalWithSourceUrlTest';
+
+module.exports = GlobalEvalWithSourceUrlTest;

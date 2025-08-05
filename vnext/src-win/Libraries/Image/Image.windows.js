@@ -28,7 +28,6 @@ import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 import resolveAssetSource from './resolveAssetSource';
-import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 import * as React from 'react';
 
 function getSize(
@@ -171,20 +170,20 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
 
   const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
-  // [Windows - Paper doesn't support Views in Text while Fabric does
-  if (global.RN$Bridgeless !== true) {
-    return (
-      // [Windows
-      <TextAncestor.Consumer>
-        {hasTextAncestor => {
-          invariant(
-            !hasTextAncestor,
-            'Nesting of <Image> within <Text> is not currently supported.',
-          );
-          // windows]
-          return (
-            <ImageAnalyticsTagContext.Consumer>
-              {analyticTag => (
+  return (
+    // [Windows
+    <TextAncestor.Consumer>
+      {hasTextAncestor => {
+        invariant(
+          !hasTextAncestor,
+          'Nesting of <Image> within <Text> is not currently supported.',
+        );
+        // windows]
+
+        return (
+          <ImageAnalyticsTagContext.Consumer>
+            {analyticTag => {
+              return (
                 <ImageViewNativeComponent
                   accessibilityState={_accessibilityState}
                   {...restProps}
@@ -197,33 +196,13 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
                   source={sources}
                   internal_analyticTag={analyticTag}
                 />
-              )}
-            </ImageAnalyticsTagContext.Consumer>
-          );
-        }}
-      </TextAncestor.Consumer>
-    );
-  } else {
-    return (
-      <ImageAnalyticsTagContext.Consumer>
-        {analyticTag => (
-          <ImageViewNativeComponent
-            accessibilityState={_accessibilityState}
-            {...restProps}
-            accessible={props.alt !== undefined ? true : props.accessible}
-            accessibilityLabel={accessibilityLabel ?? props.alt}
-            ref={actualRef}
-            style={style}
-            resizeMode={resizeMode}
-            tintColor={tintColor}
-            source={sources}
-            internal_analyticTag={analyticTag}
-          />
-        )}
-      </ImageAnalyticsTagContext.Consumer>
-    );
-  }
-  // Windows]
+              );
+            }}
+          </ImageAnalyticsTagContext.Consumer>
+        );
+      }}
+    </TextAncestor.Consumer>
+  );
 });
 
 const imageComponentDecorator = unstable_getImageComponentDecorator();
@@ -293,4 +272,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Image;
+module.exports = Image;

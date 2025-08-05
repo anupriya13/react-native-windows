@@ -80,17 +80,16 @@ class PressInOutEvents extends React.Component<
     super(props);
     this.state = {text: 'PressIn/PressOut message'};
   }
-
   render() {
     return (
       <View>
-        <Text testID="textinput-state-display">{this.state.text}</Text>
+        <Text>{this.state.text}</Text>
         <ExampleTextInput
           placeholder="Click inside the box to observe events being fired."
           style={[styles.singleLineWithHeightTextInput]}
-          onPressIn={() => {
-            this.setState({text: 'Holding down the click/touch'});
-          }}
+          onPressIn={() =>
+            this.setState({text: 'Holding down the click/touch'})
+          }
           onPressOut={() => this.setState({text: 'Released click/touch'})}
           testID="textinput-press"
         />
@@ -210,30 +209,6 @@ const examples: Array<RNTesterModuleExample> = [
     },
   },
   {
-    title: 'Select text on focus',
-    render: function (): React.Node {
-      return (
-        <View>
-          <Text>Select text on focus:</Text>
-          <ExampleTextInput
-            selectTextOnFocus={true}
-            style={styles.singleLine}
-            testID="select-text-on-focus"
-          />
-          <Text>
-            Do not select text on focus if clear text on focus is enabled:
-          </Text>
-          <ExampleTextInput
-            selectTextOnFocus={true}
-            clearTextOnFocus={true}
-            style={styles.singleLine}
-            testID="select-text-on-focus-while-clear-text-on-focus"
-          />
-        </View>
-      );
-    },
-  },
-  {
     title: 'Colors and text inputs',
     render: function (): React.Node {
       return (
@@ -329,36 +304,6 @@ const examples: Array<RNTesterModuleExample> = [
               key={fontWeight}
               style={[styles.singleLine, {fontWeight}]}
               testID={'textinput-weight-' + fontWeight}
-            />
-          ))}
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Font Family',
-    render: function (): React.Node {
-      return (
-        <View testID="style-fontFamily">
-          <ExampleTextInput
-            defaultValue="Font Family (default)"
-            style={[styles.singleLine]}
-            testID="textinput-family-default"
-          />
-          {[
-            'normal',
-            'Times New Roman',
-            'Courier New',
-            'Arial',
-            'Comic Sans MS',
-            'Georgia',
-            'Verdana',
-          ].map(fontFamily => (
-            <ExampleTextInput
-              defaultValue={`Font Family (${fontFamily})`}
-              key={fontFamily}
-              style={[styles.singleLine, {fontFamily}]}
-              testID={'textinput-family-' + fontFamily}
             />
           ))}
         </View>
@@ -539,59 +484,6 @@ const examples: Array<RNTesterModuleExample> = [
             rows={5}
             multiline={true}
             placeholder="Five line input using rows prop"
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'allowFontScaling attribute',
-    render: function (): React.Node {
-      return (
-        <View>
-          <Text>
-            By default, text will respect Text Size accessibility setting on
-            Android. It means that all font sizes will be increased or decreased
-            depending on the value of the Text Size setting in the OS's Settings
-            app.
-          </Text>
-          <ExampleTextInput
-            placeholder="allowFontScaling = false"
-            allowFontScaling={false}
-          />
-          <ExampleTextInput
-            style={{marginTop: 10}}
-            placeholder="allowFontScaling = false"
-            allowFontScaling={true}
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'maxFontSizeMultiplier attribute',
-    name: 'maxFontSizeMultiplier',
-    render(): React.Node {
-      return (
-        <View testID={'max-font-size-multiplier'}>
-          <Text>
-            When allowFontScaling is enabled, you can use the
-            maxFontSizeMultiplier prop to set an upper limit on how much the
-            font size will be scaled.
-          </Text>
-          <ExampleTextInput
-            allowFontScaling={true}
-            maxFontSizeMultiplier={1}
-            placeholder="This text will not scale up (max 1x)"
-            style={{marginTop: 10}}
-            testID={'non-scalable-text-input'}
-          />
-          <ExampleTextInput
-            allowFontScaling={true}
-            maxFontSizeMultiplier={1.5}
-            placeholder="This text will scale up (max 1.5x)"
-            style={{marginTop: 10}}
-            testID={'scalable-text-input'}
           />
         </View>
       );

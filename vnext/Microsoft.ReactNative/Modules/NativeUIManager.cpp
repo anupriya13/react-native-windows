@@ -998,14 +998,14 @@ void NativeUIManager::measure(
 
   auto feView = view.try_as<xaml::FrameworkElement>();
   if (feView == nullptr) {
-    callback(0, 0, 0, 0, 0, 0);
+    m_context.JSDispatcher().Post([callback = std::move(callback)]() { callback(0, 0, 0, 0, 0, 0); });
     return;
   }
 
   // Retrieve the XAML element for the root view containing this view
   auto feRootView = static_cast<ShadowNodeBase &>(shadowRoot).GetView().try_as<xaml::FrameworkElement>();
   if (feRootView == nullptr) {
-    callback(0, 0, 0, 0, 0, 0);
+    m_context.JSDispatcher().Post([callback = std::move(callback)]() { callback(0, 0, 0, 0, 0, 0); });
     return;
   }
 
@@ -1015,7 +1015,9 @@ void NativeUIManager::measure(
   // this is exactly, but it is not used anyway.
   //  Either codify this non-use or determine if and how we can send the needed
   //  data.
-  callback(0, 0, rectInParentCoords.Width, rectInParentCoords.Height, rectInParentCoords.X, rectInParentCoords.Y);
+  m_context.JSDispatcher().Post([callback = std::move(callback), react = rectInParentCoords]() {
+    callback(0, 0, react.Width, react.Height, react.X, react.Y);
+  });
 }
 
 void NativeUIManager::measureInWindow(
@@ -1031,11 +1033,14 @@ void NativeUIManager::measureInWindow(
     auto windowTransform = view.TransformToVisual(nullptr);
     auto positionInWindow = windowTransform.TransformPoint({0, 0});
 
-    callback(positionInWindow.X, positionInWindow.Y, view.ActualWidth(), view.ActualHeight());
+    m_context.JSDispatcher().Post(
+        [callback = std::move(callback), pos = positionInWindow, w = view.ActualWidth(), h = view.ActualHeight()]() {
+          callback(pos.X, pos.Y, w, h);
+        });
     return;
   }
 
-  callback(0, 0, 0, 0);
+  m_context.JSDispatcher().Post([callback = std::move(callback)]() { callback(0, 0, 0, 0); });
 }
 
 void NativeUIManager::measureLayout(
@@ -1055,11 +1060,15 @@ void NativeUIManager::measureLayout(
     const auto height = static_cast<float>(targetElement.ActualHeight());
     const auto transformedBounds = ancestorTransform.TransformBounds(winrt::Rect(0, 0, width, height));
 
-    callback(transformedBounds.X, transformedBounds.Y, transformedBounds.Width, transformedBounds.Height);
+    m_context.JSDispatcher().Post([callback = std::move(callback), rect = transformedBounds]() {
+      callback(rect.X, rect.Y, rect.Width, rect.Height);
+    });
   } catch (winrt::hresult_error const &e) {
-    auto writer = React::MakeJSValueTreeWriter();
-    writer.WriteString(e.message());
-    errorCallback(React::TakeJSValue(writer));
+    m_context.JSDispatcher().Post([errorCallback = std::move(errorCallback), msg = e.message()]() {
+      auto writer = React::MakeJSValueTreeWriter();
+      writer.WriteString(msg);
+      errorCallback(React::TakeJSValue(writer));
+    });
   }
 }
 
@@ -1073,7 +1082,7 @@ void NativeUIManager::findSubviewIn(
 
   auto rootUIView = view.try_as<xaml::UIElement>();
   if (rootUIView == nullptr) {
-    callback(0, 0, 0, 0, 0);
+    m_context.JSDispatcher().Post([callback = std::move(callback)]() { callback(0, 0, 0, 0, 0); });
     return;
   }
 
@@ -1102,12 +1111,14 @@ void NativeUIManager::findSubviewIn(
   }
 
   if (foundElement == nullptr) {
-    callback(0, 0, 0, 0, 0);
+    m_context.JSDispatcher().Post([callback = std::move(callback)]() { callback(0, 0, 0, 0, 0); });
     return;
   }
 
-  auto box = GetRectOfElementInParentCoords(foundElement, rootUIView);
-  callback(static_cast<double>(foundTag), box.X, box.Y, box.Width, box.Height);
+  m_context.JSDispatcher().Post(
+      [callback = std::move(callback), foundTag, box = GetRectOfElementInParentCoords(foundElement, rootUIView)]() {
+        callback(static_cast<double>(foundTag), box.X, box.Y, box.Width, box.Height);
+      });
 }
 
 void NativeUIManager::focus(int64_t reactTag) {

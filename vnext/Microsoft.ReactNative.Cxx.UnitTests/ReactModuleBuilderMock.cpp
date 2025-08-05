@@ -69,10 +69,6 @@ void ReactModuleBuilderMock::AddInitializer(InitializerDelegate const &initializ
   m_initializers.push_back(initializer);
 }
 
-void ReactModuleBuilderMock::AddJsiInitializer(JsiInitializerDelegate const &initializer) noexcept {
-  m_jsiinitializers.push_back(initializer);
-}
-
 void ReactModuleBuilderMock::AddConstantProvider(ConstantProviderDelegate const &constantProvider) noexcept {
   m_constantProviders.push_back(constantProvider);
 }

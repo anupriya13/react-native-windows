@@ -3,6 +3,7 @@
   "version": "0.0.54",
   "private": true,
   "scripts": {
+    "bundle-win32": "rnw-scripts prepareBundleWin32 && npx @react-native-community/cli bundle --entry-file Samples/rntester.tsx --bundle-output windows/playground-win32/Bundle/Samples/rntester.bundle --platform windows --assets-dest windows/playground-win32/Bundle",
     "start": "npx @react-native-community/cli start",
     "lint:fix": "rnw-scripts lint:fix",
     "lint": "rnw-scripts lint",
@@ -15,17 +16,17 @@
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "react": "^19.0.0",
-    "react-native": "0.79.0-nightly-20250206-fb8a6a5bb",
-    "react-native-windows": "^0.0.0-canary.957"
+    "react-native": "0.78.0-nightly-20250113-d4407d6f7",
+    "react-native-windows": "^0.0.0-canary.923"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/runtime": "^7.20.0",
     "@react-native-community/cli": "15.0.0-alpha.2",
-    "@react-native/metro-config": "0.79.0-nightly-20250206-fb8a6a5bb",
+    "@react-native/metro-config": "0.78.0-nightly-20241231-a3c8e2137",
     "@rnw-scripts/babel-react-native-config": "0.0.0",
-    "@rnw-scripts/eslint-config": "1.2.35",
-    "@rnw-scripts/just-task": "2.3.52",
+    "@rnw-scripts/eslint-config": "1.2.32",
+    "@rnw-scripts/just-task": "2.3.49",
     "@rnw-scripts/metro-dev-config": "0.0.0",
     "@rnw-scripts/ts-config": "2.0.5",
     "@types/node": "^18.0.0",

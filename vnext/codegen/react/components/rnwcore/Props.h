@@ -355,7 +355,6 @@ class ModalHostViewProps final : public ViewProps {
   bool animated{false};
   ModalHostViewSupportedOrientationsMask supportedOrientations{static_cast<ModalHostViewSupportedOrientationsMask>(ModalHostViewSupportedOrientations::Portrait)};
   int identifier{0};
-  std::string title{};
 };
 
 class SafeAreaViewProps final : public ViewProps {

@@ -273,4 +273,4 @@ const View: component(
 
 View.displayName = 'View';
 
-export default View;
+module.exports = View;
