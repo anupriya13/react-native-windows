@@ -3,7 +3,7 @@ name: Weekly yarn.lock Refresh
 permissions:
   contents: write
   pull-requests: write
-  
+
 on:
   workflow_dispatch:
     inputs:
@@ -17,6 +17,10 @@ on:
           - 0.80-stable
           - 0.79-stable
           - 0.78-stable
+      package_name:
+        description: "Package to upgrade (use 'all' to upgrade everything)"
+        required: true
+        default: all
 
   schedule:
     - cron: '0 3 * * 1'  # Every Monday at 3am UTC
@@ -52,11 +56,18 @@ jobs:
       - name: Install Yarn
         run: npm install -g yarn
 
-      - name: Update yarn.lock (skip scripts)
+      - name: Update dependencies
         working-directory: ./repo
         run: |
           echo "📦 Running yarn install without lifecycle scripts..."
           yarn install --ignore-scripts --frozen-lockfile
+
+          echo "⬆️ Running yarn up..."
+          if [[ "${{ github.event.inputs.package_name }}" == "all" ]]; then
+            yarn up
+          else
+            yarn up "${{ github.event.inputs.package_name }}"
+          fi
 
       - name: Commit and push changes via gh CLI
         working-directory: ./repo
@@ -66,7 +77,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          BRANCH="chore/weekly-lock-refresh-${{ matrix.branch }}"
+          BRANCH="chore/yarn-up-${{ matrix.branch }}-${{ github.event.inputs.package_name }}"
 
           if git diff --quiet; then
             echo "🟢 No changes to commit."
@@ -74,8 +85,8 @@ jobs:
           fi
 
           git checkout -B "$BRANCH"
-          git add yarn.lock
-          git commit -m "chore: weekly yarn.lock refresh for ${{ matrix.branch }}"
+          git add yarn.lock package.json
+          git commit -m "chore: yarn up ${{ github.event.inputs.package_name }} on ${{ matrix.branch }}"
           git push --force --set-upstream "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$BRANCH"
 
       - name: Create Pull Request via GitHub CLI
@@ -89,29 +100,22 @@ jobs:
           - Chore
           
           ### Why
-          Updates Yarn.lock dependencies
+          Automated dependency update using \`yarn up\`.
           
           ### What
-          Updated the yarn.lock to point to the new versions.
-          Steps to upgrade:
-          1. Delete the older version from yarn.lock file
-          2. Execute yarn command so it can fetch the new versions.
-          
-          ## Screenshots
-          
+          Ran:
+          \`\`\`
+          yarn up ${{ github.event.inputs.package_name }}
+          \`\`\`
           
           ## Changelog
           Should this change be included in the release notes: no
           EOF
-          )
+                    )
           
-              if gh pr create \
-                --title "chore: Refresh yarn.lock for ${{ matrix.branch }} (weekly)" \
-                --body "$PR_BODY" \
-                --head "chore/weekly-lock-refresh-${{ matrix.branch }}" \
-                --base "${{ matrix.branch }}" \
-                --repo microsoft/react-native-windows; then
-                echo "✅ PR created successfully for branch ${{ matrix.branch }}"
-              else
-                echo "ℹ️ PR may already exist or could not be created."
-              fi
+                    gh pr create \
+                      --title "chore: yarn up ${{ github.event.inputs.package_name }} on ${{ matrix.branch }}" \
+                      --body "$PR_BODY" \
+                      --head "chore/yarn-up-${{ matrix.branch }}-${{ github.event.inputs.package_name }}" \
+                      --base "${{ matrix.branch }}" \
+                      --repo "${{ github.repository }}" || echo "ℹ️ PR may already exist or could not be created."
