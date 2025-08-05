@@ -61,11 +61,11 @@ jobs:
         working-directory: ./repo
         run: |
           if [[ -n "${{ github.event.inputs.package_name }}" ]]; then
-            echo "⬆️ Running yarn up ${{ github.event.inputs.package_name }}..."
-            yarn up "${{ github.event.inputs.package_name }}"
+            echo "⬆️ Running yarn upgrade ${{ github.event.inputs.package_name }}..."
+            yarn upgrade "${{ github.event.inputs.package_name }}"
           else
-            echo "⬆️ Running yarn up (all)..."
-            yarn up
+            echo "⬆️ Running yarn upgrade (all)..."
+            yarn upgrade
           fi
 
           echo "📦 Running yarn install without lifecycle scripts..."
