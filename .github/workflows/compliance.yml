@@ -1,5 +1,9 @@
 name: Weekly yarn.lock Refresh
 
+permissions:
+  contents: write
+  pull-requests: write
+  
 on:
   workflow_dispatch:
     inputs:
@@ -106,7 +110,7 @@ jobs:
                 --body "$PR_BODY" \
                 --head "chore/weekly-lock-refresh-${{ matrix.branch }}" \
                 --base "${{ matrix.branch }}" \
-                --repo "${{ github.repository }}"; then
+                --repo microsoft/react-native-windows; then
                 echo "✅ PR created successfully for branch ${{ matrix.branch }}"
               else
                 echo "ℹ️ PR may already exist or could not be created."
