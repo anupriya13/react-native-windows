@@ -1,4 +1,4 @@
-name: Weekly yarn.lock Refresh
+name: Upgrade package(s) yarn.lock file
 
 permissions:
   contents: write
@@ -22,9 +22,6 @@ on:
         required: false
         default: ""
         type: string
-
-  schedule:
-    - cron: '0 3 * * 1'  # Every Monday at 3am UTC
 
 jobs:
   refresh-lockfile:
