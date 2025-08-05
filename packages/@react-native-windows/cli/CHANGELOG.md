@@ -1,8 +1,71 @@
 # Change Log - @react-native-windows/cli
 
-<!-- This log was last generated on Fri, 07 Mar 2025 06:27:16 GMT and should not be manually modified. -->
+<!-- This log was last generated on Sat, 17 May 2025 05:25:32 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 0.0.0-canary.264
+
+Sat, 17 May 2025 05:25:32 GMT
+
+### Changes
+
+- fix(cli): ignore msbuild binglog files (fcalise@gmail.com)
+
+## 0.0.0-canary.263
+
+Tue, 13 May 2025 21:05:07 GMT
+
+### Changes
+
+- Bump @react-native-windows/codegen to v0.0.0-canary.122
+- Bump @react-native-windows/fs to v0.0.0-canary.64
+- Bump @react-native-windows/package-utils to v0.0.0-canary.90
+- Bump @react-native-windows/telemetry to v0.0.0-canary.119
+- Bump @rnw-scripts/eslint-config to v1.2.35
+- Bump @rnw-scripts/just-task to v2.3.52
+
+## 0.0.0-canary.262
+
+Thu, 08 May 2025 05:23:33 GMT
+
+### Changes
+
+- Bump @react-native-windows/codegen to v0.0.0-canary.121
+- Bump @react-native-windows/fs to v0.0.0-canary.63
+- Bump @react-native-windows/package-utils to v0.0.0-canary.89
+- Bump @react-native-windows/telemetry to v0.0.0-canary.118
+- Bump @rnw-scripts/eslint-config to v1.2.34
+- Bump @rnw-scripts/just-task to v2.3.51
+
+## 0.0.0-canary.261
+
+Thu, 24 Apr 2025 05:24:03 GMT
+
+### Changes
+
+- Fix broken CLI tests (jthysell@microsoft.com)
+
+## 0.0.0-canary.260
+
+Wed, 16 Apr 2025 05:25:00 GMT
+
+### Changes
+
+- fix(cli): codegenWindows file glob for subpaths (fcalise@gmail.com)
+
+## 0.0.0-canary.259
+
+Wed, 02 Apr 2025 05:22:08 GMT
+
+### Changes
+
+- Bump @react-native-windows/codegen to v0.0.0-canary.120
+- Bump @react-native-windows/fs to v0.0.0-canary.62
+- Bump @react-native-windows/package-utils to v0.0.0-canary.88
+- Bump @react-native-windows/telemetry to v0.0.0-canary.117
+- Bump @rnw-scripts/eslint-config to v1.2.33
+- Bump @rnw-scripts/just-task to v2.3.50
 
 ## 0.0.0-canary.258
 

@@ -1,8 +1,320 @@
 # Change Log - react-native-windows
 
-<!-- This log was last generated on Wed, 12 Mar 2025 05:22:51 GMT and should not be manually modified. -->
+<!-- This log was last generated on Sat, 17 May 2025 05:25:32 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 0.0.0-canary.957
+
+Sat, 17 May 2025 05:25:32 GMT
+
+### Changes
+
+- fix(vnext-templates): update gitignore for MS Build logs (fcalise@gmail.com)
+- Bump @react-native-windows/cli to v0.0.0-canary.264
+
+## 0.0.0-canary.956
+
+Fri, 16 May 2025 05:27:54 GMT
+
+### Changes
+
+- Fixing unreferenced parameter warnings as errors in Playground-Composition and elsewhere (jthysell@microsoft.com)
+- merge in folly 2024.10.14.00 (tatianakapos@microsoft.com)
+- Fix documentation in IReactPackageBuilderFabric (jthysell@microsoft.com)
+
+## 0.0.0-canary.955
+
+Thu, 15 May 2025 05:23:40 GMT
+
+### Changes
+
+- Remove usage of JSDispatcher in various built-in modules (30809111+acoates-ms@users.noreply.github.com)
+
+## 0.0.0-canary.954
+
+Wed, 14 May 2025 16:54:21 GMT
+
+### Changes
+
+- [Fabric] Implementation of accessibilityItemType (kvineeth@microsoft.com)
+- [Fabric] Implementation of accessibilityAccessKey (kvineeth@microsoft.com)
+
+## 0.0.0-canary.953
+
+Tue, 13 May 2025 21:05:07 GMT
+
+### Changes
+
+- addded titlebar , title handling , X handling , resizable (abhijeetjha@microsoft.com)
+- Integrate RN Nightly Build 0.79.0-nightly-20250206-fb8a6a5bb (54227869+anupriya13@users.noreply.github.com)
+- Bump @react-native-windows/cli to v0.0.0-canary.263
+- Bump @react-native-windows/codegen to v0.0.0-canary.122
+- Bump @rnw-scripts/eslint-config to v1.2.35
+- Bump @rnw-scripts/jest-out-of-tree-snapshot-resolver to v1.1.39
+- Bump @rnw-scripts/just-task to v2.3.52
+- Bump react-native-platform-override to v1.9.54
+
+## 0.0.0-canary.952
+
+Thu, 08 May 2025 05:23:33 GMT
+
+### Changes
+
+- Properly hook up root uia provider to island (30809111+acoates-ms@users.noreply.github.com)
+- initial commit (yajurgrover24@gmail.com)
+- Bump @react-native-windows/cli to v0.0.0-canary.262
+- Bump @react-native-windows/codegen to v0.0.0-canary.121
+- Bump @rnw-scripts/eslint-config to v1.2.34
+- Bump @rnw-scripts/jest-out-of-tree-snapshot-resolver to v1.1.38
+- Bump @rnw-scripts/just-task to v2.3.51
+- Bump react-native-platform-override to v1.9.53
+
+## 0.0.0-canary.951
+
+Wed, 07 May 2025 05:27:07 GMT
+
+### Changes
+
+- [Fabric] Implement selectTextOnFocus in Text Input (54227869+anupriya13@users.noreply.github.com)
+- Bump hermes version (30809111+acoates-ms@users.noreply.github.com)
+- [Fabric] Implementation of accessibiltyAnnotation and adding support for IAnnotationProvider (kvineeth@microsoft.com)
+
+## 0.0.0-canary.950
+
+Thu, 01 May 2025 05:24:00 GMT
+
+### Changes
+
+- Add git repo check to creaternwapp.cmd and creaternwlib.cmd (jthysell@microsoft.com)
+
+## 0.0.0-canary.949
+
+Wed, 30 Apr 2025 05:27:57 GMT
+
+### Changes
+
+- Fix NuGet lock files and enforce them not changing accidentally (jthysell@microsoft.com)
+
+## 0.0.0-canary.948
+
+Mon, 28 Apr 2025 05:24:25 GMT
+
+### Changes
+
+- Implement onScrollEndDrag prop (10109130+sharath2727@users.noreply.github.com)
+
+## 0.0.0-canary.947
+
+Sat, 26 Apr 2025 05:27:07 GMT
+
+### Changes
+
+- [Fabric] Implement minimumFontScale in Text (54227869+anupriya13@users.noreply.github.com)
+- Fix InitialProps (30809111+acoates-ms@users.noreply.github.com)
+- [Fabric] Implement hidesWhenStopped in ActivityIndicator (54227869+anupriya13@users.noreply.github.com)
+
+## 0.0.0-canary.946
+
+Thu, 24 Apr 2025 05:24:04 GMT
+
+### Changes
+
+- Implement accessibilityLevel for Fabric (kvineeth@microsoft.com)
+- Bump @react-native-windows/cli to v0.0.0-canary.261
+
+## 0.0.0-canary.945
+
+Wed, 23 Apr 2025 05:25:48 GMT
+
+### Changes
+
+- Update WindowsAppSDK version to 1.7.250401001 (30809111+acoates-ms@users.noreply.github.com)
+
+## 0.0.0-canary.944
+
+Tue, 22 Apr 2025 05:24:03 GMT
+
+### Changes
+
+- Implement scrollEventThrottle for ScrollView in Fabric (54227869+anupriya13@users.noreply.github.com)
+
+## 0.0.0-canary.943
+
+Sun, 20 Apr 2025 05:22:30 GMT
+
+### Changes
+
+- Add TaskSequencer for WebSocket resource (julio.rocha@microsoft.com)
+
+## 0.0.0-canary.942
+
+Fri, 18 Apr 2025 05:22:17 GMT
+
+### Changes
+
+- Implementation of adjustFontSizeToFit for Text in Fabric (kvineeth@microsoft.com)
+- Implement zoomScale, maximumZoomScale and minimumZoomScale in ScrollView (54227869+anupriya13@users.noreply.github.com)
+- Implement body in Image Source (54227869+anupriya13@users.noreply.github.com)
+
+## 0.0.0-canary.941
+
+Wed, 16 Apr 2025 05:25:01 GMT
+
+### Changes
+
+- Add SetProperties method to ReactNativeIsland (30809111+acoates-ms@users.noreply.github.com)
+- Make ExperimentalFeatures overridable through props files (julio.rocha@microsoft.com)
+- Bump @react-native-windows/cli to v0.0.0-canary.260
+
+## 0.0.0-canary.940
+
+Tue, 15 Apr 2025 05:24:25 GMT
+
+### Changes
+
+- Implement decelerationRate in ScrollView (54227869+anupriya13@users.noreply.github.com)
+- Implement showsVerticalScrollIndicatorValue and showsVerticalScrollIndicatorValue for ScrollView (54227869+anupriya13@users.noreply.github.com)
+
+## 0.0.0-canary.939
+
+Sat, 12 Apr 2025 05:26:12 GMT
+
+### Changes
+
+- Implement SpellCheck and AutoCorrect for TextInput (54227869+anupriya13@users.noreply.github.com)
+- Implement onProgress for Image (54227869+anupriya13@users.noreply.github.com)
+
+## 0.0.0-canary.938
+
+Thu, 10 Apr 2025 05:23:12 GMT
+
+### Changes
+
+- Add ImageRequestParams (54227869+anupriya13@users.noreply.github.com)
+
+## 0.0.0-canary.937
+
+Wed, 09 Apr 2025 05:23:40 GMT
+
+### Changes
+
+- Enforce SendPendingMessages in dispatch queue (julio.rocha@microsoft.com)
+- Fix Narrator Bug (34109996+chiaramooney@users.noreply.github.com)
+- Use creaternwapp.cmd and creaternwlib.cmd scripts to create new projects in CI (jthysell@microsoft.com)
+
+## 0.0.0-canary.936
+
+Tue, 08 Apr 2025 05:22:59 GMT
+
+### Changes
+
+- Add Custom Font Family support in TextInput (54227869+anupriya13@users.noreply.github.com)
+- Update creaternw scripts to use RNW devDependencies (jthysell@microsoft.com)
+
+## 0.0.0-canary.935
+
+Fri, 04 Apr 2025 05:22:09 GMT
+
+### Changes
+
+- Remove old library templates (jthysell@microsoft.com)
+
+## 0.0.0-canary.934
+
+Thu, 03 Apr 2025 05:21:53 GMT
+
+### Changes
+
+- Implement letterSpacing for TextInput (54227869+anupriya13@users.noreply.github.com)
+
+## 0.0.0-canary.933
+
+Wed, 02 Apr 2025 05:22:08 GMT
+
+### Changes
+
+- bump dep (tatianakapos@microsoft.com)
+- Bump @react-native-windows/cli to v0.0.0-canary.259
+- Bump @react-native-windows/codegen to v0.0.0-canary.120
+- Bump @rnw-scripts/eslint-config to v1.2.33
+- Bump @rnw-scripts/jest-out-of-tree-snapshot-resolver to v1.1.37
+- Bump @rnw-scripts/just-task to v2.3.50
+- Bump react-native-platform-override to v1.9.52
+
+## 0.0.0-canary.932
+
+Tue, 01 Apr 2025 20:12:38 GMT
+
+### Changes
+
+- Implement OnScrollBeginDrag Event (54227869+anupriya13@users.noreply.github.com)
+
+## 0.0.0-canary.931
+
+Fri, 28 Mar 2025 05:25:50 GMT
+
+### Changes
+
+- Bump folly to v2024.01.01.00 (jthysell@microsoft.com)
+
+## 0.0.0-canary.930
+
+Thu, 27 Mar 2025 05:23:14 GMT
+
+### Changes
+
+- Allow TextInput to scroll (30809111+acoates-ms@users.noreply.github.com)
+
+## 0.0.0-canary.929
+
+Wed, 26 Mar 2025 05:26:15 GMT
+
+### Changes
+
+- Allow text components to have children (tatianakapos@microsoft.com)
+
+## 0.0.0-canary.928
+
+Tue, 25 Mar 2025 05:21:49 GMT
+
+### Changes
+
+- Fix use of ExperimentalWinUI3 in CI / Secure PR (jthysell@microsoft.com)
+- Button should pass onAccessibilityTap to native (34109996+chiaramooney@users.noreply.github.com)
+
+## 0.0.0-canary.927
+
+Sat, 22 Mar 2025 05:24:34 GMT
+
+### Changes
+
+- Add creaternwapp.cmd and creaternwlib.cmd scripts (jthysell@microsoft.com)
+
+## 0.0.0-canary.926
+
+Sat, 15 Mar 2025 05:21:08 GMT
+
+### Changes
+
+- Enable parallel C++ compilation (julio.rocha@microsoft.com)
+
+## 0.0.0-canary.925
+
+Fri, 14 Mar 2025 05:22:28 GMT
+
+### Changes
+
+- Implemented textAlign in TextInput for Fabric (14967941+danielayala94@users.noreply.github.com)
+
+## 0.0.0-canary.924
+
+Thu, 13 Mar 2025 05:21:34 GMT
+
+### Changes
+
+- Add IScrollProvider Implementation (34109996+chiaramooney@users.noreply.github.com)
+- Add new .NET projection for Microsoft.ReactNative (jthysell@microsoft.com)
 
 ## 0.0.0-canary.923
 

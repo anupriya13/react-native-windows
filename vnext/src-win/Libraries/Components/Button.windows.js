@@ -31,7 +31,7 @@ import View from './View/View';
 import invariant from 'invariant';
 import * as React from 'react';
 
-type ButtonProps = $ReadOnly<{|
+type ButtonProps = $ReadOnly<{
   /**
     Text to display inside the button. On Android the given title will be
     converted to the uppercased form.
@@ -152,6 +152,7 @@ type ButtonProps = $ReadOnly<{|
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+  onAccessibilityTap?: ?() => void, // Windows
   accessibilityState?: ?AccessibilityState,
 
   /**
@@ -180,7 +181,7 @@ type ButtonProps = $ReadOnly<{|
    */
   tabIndex?: ?number,
   // Windows]
-|}>;
+}>;
 
 /**
   A basic button component that should render nicely on any platform. Supports a
@@ -333,6 +334,7 @@ const Button: component(
     accessibilityHint,
     accessibilityLanguage,
     onAccessibilityAction,
+    onAccessibilityTap, // Windows
     tabIndex,
   } = props;
   const buttonStyles: Array<ViewStyleProp> = [styles.button];
@@ -391,6 +393,7 @@ const Button: component(
         accessibilityLanguage={accessibilityLanguage}
         accessibilityRole="button"
         accessibilityState={_accessibilityState}
+        onAccessibilityTap={onAccessibilityTap} // Windows
         importantForAccessibility={_importantForAccessibility}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}

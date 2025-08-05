@@ -18,9 +18,8 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
 import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
-// [Windows 12997 - nested Images and Views not supported]
-// import TextInlineViewsExample from './TextInlineViewsExample';
-// const TextInlineView = require('../../components/TextInlineView');
+import TextInlineViewsExample from './TextInlineViewsExample';
+const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
 const {
   LayoutAnimation,
@@ -30,7 +29,7 @@ const {
   View,
 } = require('react-native');
 
-class Entity extends React.Component<{|children: React.Node|}> {
+class Entity extends React.Component<{children: React.Node}> {
   render(): React.Node {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -87,12 +86,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{||}>;
+type AdjustingFontSizeProps = $ReadOnly<{}>;
 
-type AdjustingFontSizeState = {|
+type AdjustingFontSizeState = {
   dynamicText: string,
   shouldRender: boolean,
-|};
+};
 
 class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,
@@ -488,6 +487,37 @@ function AllowFontScalingExample(props: {}): React.Node {
         </RNTesterText>
       </RNTesterText>
     </>
+  );
+}
+
+function MaxFontSizeMultiplierExample(props: {}): React.Node {
+  return (
+    <View testID={'max-font-size-multiplier'}>
+      <Text>
+        When allowFontScaling is enabled, you can use the maxFontSizeMultiplier
+        prop to set an upper limit on how much the font size will be scaled.
+      </Text>
+      <Text
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1}
+        style={{marginTop: 10}}>
+        This text will not scale up (max 1x)
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1.5}>
+        This text will scale up (max 1.5x)
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text>Inherit max (max 1x)</Text>
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text maxFontSizeMultiplier={1.5}>
+          Override inherited max (max 1.5x)
+        </Text>
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text maxFontSizeMultiplier={0}>Ignore inherited max (no max)</Text>
+      </Text>
+    </View>
   );
 }
 
@@ -1095,7 +1125,8 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
   );
   const subtitleStyle = {fontSize: 16, marginTop: 8, fontWeight: 'bold'};
 
-  return (
+  // [Windows - Paper doesn't support Views in Text while Fabric does
+  return global.RN$Bridgeless !== true ? (
     <View>
       <RNTesterText style={subtitleStyle}>{'Nested <Text/>s:'}</RNTesterText>
       <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
@@ -1112,84 +1143,103 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         {texts}
         {marker}
       </View>
-      {/* [Windows #12997 - This tests renders <View> nested within <Text> which is not supported yet]
+    </View>
+  ) : (
+    <View>
+      <RNTesterText style={subtitleStyle}>{'Nested <Text/>s:'}</RNTesterText>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        {marker}
+        <RNTesterText>{texts}</RNTesterText>
+        {marker}
+      </View>
+
       <RNTesterText style={subtitleStyle}>
-        {'Interleaving <View> and <Text>:'}
+        {'Array of <Text/>s in <View>:'}
       </RNTesterText>
       <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
         {marker}
-        <RNTesterText selectable={true}>
-          Some text.
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'baseline',
-              backgroundColor: '#eee',
-            }}>
-            {marker}
-            <RNTesterText>Text inside View.</RNTesterText>
-            {marker}
+        {texts}
+        {marker}
+      </View>
+      <View>
+        <RNTesterText style={subtitleStyle}>
+          {'Interleaving <View> and <Text>:'}
+        </RNTesterText>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <RNTesterText selectable={true}>
+            Some text.
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'baseline',
+                backgroundColor: '#eee',
+              }}>
+              {marker}
+              <RNTesterText>Text inside View.</RNTesterText>
+              {marker}
+            </View>
+          </RNTesterText>
+          {marker}
+        </View>
+
+        <RNTesterText style={subtitleStyle}>
+          {'Multi-line interleaved <View> and <Text>:'}
+        </RNTesterText>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          <RNTesterText selectable={true}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
+            venenatis,{' '}
+            <View
+              style={{
+                backgroundColor: 'yellow',
+              }}>
+              <RNTesterText>mauris eu commodo maximus</RNTesterText>
+            </View>{' '}
+            , ante arcu vestibulum ligula, et scelerisque diam.
+          </RNTesterText>
+        </View>
+
+        <RNTesterText style={subtitleStyle}>
+          {'Multi-line <Text> alignment'}
+        </RNTesterText>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <RNTesterText style={{fontSize: 15}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </RNTesterText>
           </View>
-        </RNTesterText>
-        {marker}
-      </View>
-
-      <RNTesterText style={subtitleStyle}>
-        {'Multi-line interleaved <View> and <Text>:'}
-      </RNTesterText>
-      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-        <RNTesterText selectable={true}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
-          venenatis,{' '}
-          <View
-            style={{
-              backgroundColor: 'yellow',
-            }}>
-            <RNTesterText>mauris eu commodo maximus</RNTesterText>
-          </View>{' '}
-          , ante arcu vestibulum ligula, et scelerisque diam.
-        </RNTesterText>
-      </View>
-
-      <RNTesterText style={subtitleStyle}>
-        {'Multi-line <Text> alignment'}
-      </RNTesterText>
-      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-        <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
-        <View style={{width: 125, backgroundColor: '#eee'}}>
-          <RNTesterText style={{fontSize: 15}}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </RNTesterText>
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <RNTesterText style={{fontSize: 10}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </RNTesterText>
+          </View>
         </View>
-        <View style={{width: 125, backgroundColor: '#eee'}}>
-          <RNTesterText style={{fontSize: 10}}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </RNTesterText>
+
+        <RNTesterText style={subtitleStyle}>{'<TextInput/>:'}</RNTesterText>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <TextInput style={{margin: 0, padding: 0}}>{texts}</TextInput>
+          {marker}
+        </View>
+
+        <RNTesterText style={subtitleStyle}>
+          {'<TextInput multiline/>:'}
+        </RNTesterText>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <TextInput multiline={true} style={{margin: 0, padding: 0}}>
+            {texts}
+          </TextInput>
+          {marker}
         </View>
       </View>
-
-      <RNTesterText style={subtitleStyle}>{'<TextInput/>:'}</RNTesterText>
-      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-        {marker}
-        <TextInput style={{margin: 0, padding: 0}}>{texts}</TextInput>
-        {marker}
-      </View>
-
-      <RNTesterText style={subtitleStyle}>
-        {'<TextInput multiline/>:'}
-      </RNTesterText>
-      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-        {marker}
-        <TextInput multiline={true} style={{margin: 0, padding: 0}}>
-          {texts}
-        </TextInput>
-        {marker}
-      </View>
-*/}
     </View>
   );
+  // Windows]
 }
 
 function TextBorderExample(props: {}): React.Node {
@@ -1639,6 +1689,13 @@ const examples = [
     },
   },
   {
+    title: 'maxFontSizeMultiplier attribute',
+    name: 'maxFontSizeMultiplier',
+    render(): React.Node {
+      return <MaxFontSizeMultiplierExample />;
+    },
+  },
+  {
     title: 'selectable attribute',
     name: 'selectable',
     render(): React.Node {
@@ -1664,50 +1721,55 @@ const examples = [
       );
     },
   },
-  /* [Windows #12997 - This tests renders <View> nested within <Text> which is not supported yet]
-  {
-    title: 'Inline views',
-    name: 'inlineViewsBasic',
-    render(): React.Node {
-      return <TextInlineView.Basic />;
-    },
-  },
-  {
-    title: 'Inline views with multiple nested texts',
-    name: 'inlineViewsMultiple',
-    render(): React.Node {
-      return <TextInlineView.NestedTexts />;
-    },
-  },
-  {
-    title: 'Inline image/view clipped by <Text>',
-    name: 'inlineViewsClipped',
-    render(): React.Node {
-      return <TextInlineView.ClippedByText />;
-    },
-  },
-  {
-    title: 'Relayout inline image',
-    name: 'relayoutInlineImage',
-    render(): React.Node {
-      return <TextInlineView.ChangeImageSize />;
-    },
-  },
-  {
-    title: 'Relayout inline view',
-    name: 'relayoutInlineView',
-    render(): React.Node {
-      return <TextInlineView.ChangeViewSize />;
-    },
-  },
-  {
-    title: 'Relayout nested inline view',
-    name: 'relayoutNestedInlineView',
-    render(): React.Node {
-      return <TextInlineView.ChangeInnerViewSize />;
-    },
-  },
-*/
+  // [Windows - Paper doesn't support Views in Text while Fabric does
+  ...(global.RN$Bridgeless === true
+    ? [
+        {
+          title: 'Inline views',
+          name: 'inlineViewsBasic',
+          render(): React.Node {
+            return <TextInlineView.Basic />;
+          },
+        },
+        {
+          title: 'Inline views with multiple nested texts',
+          name: 'inlineViewsMultiple',
+          render(): React.Node {
+            return <TextInlineView.NestedTexts />;
+          },
+        },
+        {
+          title: 'Inline image/view clipped by <Text>',
+          name: 'inlineViewsClipped',
+          render(): React.Node {
+            return <TextInlineView.ClippedByText />;
+          },
+        },
+        {
+          title: 'Relayout inline image',
+          name: 'relayoutInlineImage',
+          render(): React.Node {
+            return <TextInlineView.ChangeImageSize />;
+          },
+        },
+        {
+          title: 'Relayout inline view',
+          name: 'relayoutInlineView',
+          render(): React.Node {
+            return <TextInlineView.ChangeViewSize />;
+          },
+        },
+        {
+          title: 'Relayout nested inline view',
+          name: 'relayoutNestedInlineView',
+          render(): React.Node {
+            return <TextInlineView.ChangeInnerViewSize />;
+          },
+        },
+        TextInlineViewsExample,
+      ]
+    : []),
+  // Windows]
   {
     title: 'Text shadow',
     name: 'textShadow',
@@ -1849,8 +1911,6 @@ const examples = [
       );
     },
   },
-  // [Windows #12997]
-  // TextInlineViewsExample,
   {
     title: 'Customized Accessibility',
     name: 'textAccessibility',
@@ -1900,6 +1960,76 @@ const examples = [
           <Text style={{height: 100, width: 100}}>
             This text has customized dimensions.
           </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'AdjustFontSize according to the Width, Height and LinesCount',
+    name: 'adjustFontSizeToFit',
+    render: function (): React.Node {
+      return (
+        <View>
+          <RNTesterText
+            style={{
+              width: 500,
+              height: 100,
+              fontSize: 20,
+              backgroundColor: 'lightcoral',
+              padding: 10,
+              marginBottom: 10,
+            }}
+            testID="text-adjustfontsizetofit-default-a">
+            {`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore Ut enim ad minim veniam.With AdjustFontSize width: 800, height: 100, fontSize: 20`}
+          </RNTesterText>
+          <RNTesterText
+            adjustsFontSizeToFit
+            style={{
+              width: 500,
+              height: 100,
+              fontSize: 20,
+              backgroundColor: 'lightcoral',
+              padding: 10,
+              marginBottom: 10,
+            }}
+            testID="text-adjustfontsizetofit-default-b">
+            {`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore Ut enim ad minim veniam.With AdjustFontSize width: 800, height: 100, fontSize: 20`}
+          </RNTesterText>
+          {[
+            {width: 500, height: 80, lineCount: 3},
+            {width: 475, height: 120, lineCount: 5},
+            {width: 450, height: 160, lineCount: 0},
+          ].map((item, index) => (
+            <React.Fragment key={index}>
+              <RNTesterText
+                testID={`text-adjustfontsizetofit-${index}-a`}
+                numberOfLines={item.lineCount}
+                adjustsFontSizeToFit
+                style={{
+                  width: item.width,
+                  height: item.height,
+                  fontSize: 40,
+                  backgroundColor: '#A0C782',
+                  padding: 10,
+                  marginBottom: 10,
+                }}>
+                {`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore. With AdjustFontSize height:${item.height},width:${item.width},lineCount:${item.lineCount},fontSize:40`}
+              </RNTesterText>
+              <RNTesterText
+                testID={`text-adjustfontsizetofit-${index}-b`}
+                numberOfLines={item.lineCount}
+                style={{
+                  width: item.width,
+                  height: item.height,
+                  fontSize: 40,
+                  backgroundColor: 'lightblue',
+                  padding: 10,
+                  marginBottom: 10,
+                }}>
+                {`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore. Without AdjustFontSize height:${item.height},width:${item.width},lineCount:${item.lineCount},fontSize:40`}
+              </RNTesterText>
+            </React.Fragment>
+          ))}
         </View>
       );
     },
