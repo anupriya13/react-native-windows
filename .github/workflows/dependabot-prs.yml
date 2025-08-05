@@ -1,18 +1,13 @@
-name: Cherry-pick Dependabot PRs to Stable Branches
-
-permissions:
-  contents: write
-  pull-requests: write
+name: Auto Cherry-Pick to Stable Branches
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - main
 
 jobs:
-  cherry-pick-dependabot:
-    if: github.event.pull_request.merged == true && github.event.pull_request.user.login == 'anupriya13'
+  cherry-pick:
+    if: github.event.head_commit.author.name == 'anupriya13'
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,44 +15,41 @@ jobs:
         target_branch: [0.80-stable, 0.79-stable]
 
     steps:
-      - name: Checkout repo
+      - name: Checkout the repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Needed to access full commit history
+          fetch-depth: 0  # Needed for full commit history
 
       - name: Set up Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Fetch all branches
-        run: git fetch origin
-
-      - name: Cherry-pick into ${{ matrix.target_branch }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get latest merge commit from main
+        id: get_commit
         run: |
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          TARGET_BRANCH=${{ matrix.target_branch }}
-          COMMIT_SHA=${{ github.event.pull_request.merge_commit_sha }}
-          CHERRY_BRANCH="cherry-pick/dependabot-${PR_NUMBER}-${TARGET_BRANCH}"
+          MERGE_COMMIT=$(git log -1 --merges --pretty=format:"%H")
+          echo "MERGE_COMMIT=$MERGE_COMMIT" >> $GITHUB_ENV
 
-          echo "🟡 Cherry-picking commit $COMMIT_SHA into $TARGET_BRANCH"
+      - name: Cherry-pick and push to new branch
+        run: |
+          git fetch origin ${{ matrix.target_branch }}
+          git checkout -b cherry-pick-${{ env.MERGE_COMMIT }}-${{ matrix.target_branch }} origin/${{ matrix.target_branch }}
 
-          git checkout -b "$CHERRY_BRANCH" "origin/$TARGET_BRANCH"
-
-          if git cherry-pick "$COMMIT_SHA"; then
-            echo "✅ Cherry-pick successful"
+          if git cherry-pick -m 1 $MERGE_COMMIT; then
+            git push origin HEAD
           else
-            echo "❌ Cherry-pick failed. Aborting"
-            git cherry-pick --abort
+            echo "❌ Cherry-pick failed. Possibly conflicts."
             exit 1
           fi
 
-          git push origin "$CHERRY_BRANCH"
-
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           gh pr create \
-            --title "chore: cherry-pick dependabot PR #$PR_NUMBER into $TARGET_BRANCH" \
-            --body "Cherry-pick of https://github.com/${{ github.repository }}/pull/${PR_NUMBER}" \
-            --head "$CHERRY_BRANCH" \
-            --base "$TARGET_BRANCH"
+            --title "chore: Cherry-pick $MERGE_COMMIT into ${{ matrix.target_branch }}" \
+            --body "Automated cherry-pick of commit $MERGE_COMMIT into ${{ matrix.target_branch }}" \
+            --base "${{ matrix.target_branch }}" \
+            --head "cherry-pick-${MERGE_COMMIT}-${{ matrix.target_branch }}" \
+            --repo "${{ github.repository }}"
