@@ -16,7 +16,7 @@ jobs:
           GH_TOKEN: ${{ secrets.UPDATE_PROJECT_V2_PAT }}
         run: |
           # Find the project item ID for the issue
-          ITEM_ID=$(gh project item-list https://github.com/orgs/microsoft/projects/183 \
+          ITEM_ID=$(gh project item-list https://github.com/orgs/microsoft/projects/3 \
             --owner microsoft --format json | jq -r ".[] | select(.content.url==\"${{ github.event.issue.html_url }}\") | .id")
           if [ -z "$ITEM_ID" ]; then
             echo "No project item found for issue."
