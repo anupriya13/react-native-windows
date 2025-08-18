@@ -19,16 +19,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "Listing all project items in Project 3 for debugging..."
-          gh project item-list https://github.com/users/anupriya13/projects/3 \
-            --owner anupriya13 --format json | jq .
+          gh project item-list 3 --owner anupriya13 --format json | jq .
 
       - name: Set Remaining Days to 0 in Project 3
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           # Find the project item ID for the issue that triggered the workflow
-          ITEM_ID=$(gh project item-list https://github.com/users/anupriya13/projects/3 \
-            --owner anupriya13 --format json | jq -r ".[] | select(.content.url==\"${{ github.event.issue.html_url }}\") | .id")
+          ITEM_ID=$(gh project item-list 3 --owner anupriya13 --format json \
+            | jq -r ".[] | select(.content.url==\"${{ github.event.issue.html_url }}\") | .id")
 
           if [ -z "$ITEM_ID" ]; then
             echo "❌ No project item found for issue: ${{ github.event.issue.html_url }}"
@@ -38,8 +37,8 @@ jobs:
           echo "✅ Found Project Item ID: $ITEM_ID"
 
           # Find the field ID for "Remaining Days"
-          FIELD_ID=$(gh project field-list https://github.com/users/anupriya13/projects/3 \
-            --owner anupriya13 --format json | jq -r '.[] | select(.name=="Remaining Days") | .id')
+          FIELD_ID=$(gh project field-list 3 --owner anupriya13 --format json \
+            | jq -r '.[] | select(.name=="Remaining Days") | .id')
 
           if [ -z "$FIELD_ID" ]; then
             echo "❌ No field named 'Remaining Days' found in Project 3."
@@ -49,7 +48,6 @@ jobs:
           echo "✅ Found Field ID for Remaining Days: $FIELD_ID"
 
           # Update the field value to 0
-          gh project item-update https://github.com/users/anupriya13/projects/3 \
-            --owner anupriya13 --id "$ITEM_ID" --field-id "$FIELD_ID" --value "0"
+          gh project item-update 3 --owner anupriya13 --id "$ITEM_ID" --field-id "$FIELD_ID" --value "0"
 
           echo "🎉 Successfully set Remaining Days = 0 for issue ${{ github.event.issue.number }}"
