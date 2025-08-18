@@ -11,20 +11,23 @@ jobs:
       - name: Install GitHub CLI
         uses: actions/setup-gh@v4
 
-      - name: Set Remaining Days to 0 in Project 183
+      - name: Set Remaining Days to 0 in Project 3
         env:
           GH_TOKEN: ${{ secrets.UPDATE_PROJECT_V2_PAT }}
         run: |
           # Find the project item ID for the issue
-          ITEM_ID=$(gh project item-list https://github.com/orgs/microsoft/projects/3 \
-            --owner microsoft --format json | jq -r ".[] | select(.content.url==\"${{ github.event.issue.html_url }}\") | .id")
+          ITEM_ID=$(gh project item-list https://github.com/users/anupriya13/projects/3 \
+            --owner anupriya13 --format json | jq -r ".[] | select(.content.url==\"${{ github.event.issue.html_url }}\") | .id")
+
           if [ -z "$ITEM_ID" ]; then
             echo "No project item found for issue."
             exit 1
           fi
+
           # Find the field ID for "Remaining Days"
-          FIELD_ID=$(gh project field-list https://github.com/orgs/microsoft/projects/183 \
-            --owner microsoft --format json | jq -r '.[] | select(.name=="Remaining Days") | .id')
+          FIELD_ID=$(gh project field-list https://github.com/users/anupriya13/projects/3 \
+            --owner anupriya13 --format json | jq -r '.[] | select(.name=="Remaining Days") | .id')
+
           # Update the field value
-          gh project item-update https://github.com/orgs/microsoft/projects/183 \
-            --owner microsoft --id "$ITEM_ID" --field-id "$FIELD_ID" --value "0"
+          gh project item-update https://github.com/users/anupriya13/projects/3 \
+            --owner anupriya13 --id "$ITEM_ID" --field-id "$FIELD_ID" --value "0"
